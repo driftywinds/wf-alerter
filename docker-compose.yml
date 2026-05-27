@@ -1,0 +1,26 @@
+services:
+  warframe-portal:
+    build: .
+    container_name: warframe-portal
+    restart: unless-stopped
+    ports:
+      - "9091:9091"
+    volumes:
+      - ./data:/data
+    environment:
+      PORT: "9091"
+      DB_PATH: /data/warframe.db
+      SESSION_SECRET: "change-me-to-a-random-32+-char-string"
+      WF_PLATFORM: pc          # pc | ps4 | xb1 | swi
+      APPRISE_API_URL: "http://apprise-api:8000"
+    depends_on:
+      - apprise-api
+
+  apprise-api:
+    image: caronc/apprise:latest
+    container_name: apprise-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"            # expose if you want to hit it directly
+    volumes:
+      - ./apprise-config:/config

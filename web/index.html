@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5"/>
+<meta name="theme-color" content="#07070f"/>
+<title>Warframe Portal</title>
+<style>
+/* ── Reset & Variables ───────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07070f;--bg2:#0b0b18;--bg3:#111128;--bg4:#1a1a3e;
+  --card:#0e0e1e;--card-border:#1a1a3a;--card-hover:#15153a;
+  --border:#1e1e3a;--border-light:#2a2a4a;
+  --primary:#4f8ef7;--primary-dark:#2563eb;--primary-glow:rgba(79,142,247,.25);
+  --gold:#f5a623;--gold-glow:rgba(245,166,35,.2);
+  --green:#22c55e;--green-glow:rgba(34,197,94,.15);
+  --red:#ef4444;--red-glow:rgba(239,68,68,.15);
+  --orange:#f97316;--purple:#a855f7;--cyan:#22d3ee;--pink:#ec4899;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --radius:10px;--radius-sm:6px;
+  --font:'Inter','Segoe UI',system-ui,-apple-ui,sans-serif;
+  --transition:.2s cubic-bezier(.4,0,.2,1);
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+}
+@media(prefers-color-scheme:light){
+  :root{--bg:#f1f5f9;--bg2:#f8fafc;--bg3:#e2e8f0;--bg4:#cbd5e1;
+    --card:#ffffff;--card-border:#e2e8f0;--card-hover:#f1f5f9;
+    --border:#e2e8f0;--border-light:#cbd5e1;
+    --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  }
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden;
+  background-image:radial-gradient(ellipse at 20% 0%,rgba(79,142,247,.04) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 100%,rgba(168,85,247,.03) 0%,transparent 50%);
+  line-height:1.5;font-size:15px}
+::selection{background:var(--primary);color:#fff}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-light)}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+header{
+  background:linear-gradient(135deg,rgba(7,7,15,.98) 0%,rgba(14,14,30,.98) 100%);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;display:flex;align-items:center;gap:14px;
+  height:60px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);
+}
+header h1{font-size:1.15rem;font-weight:800;letter-spacing:.04em;white-space:nowrap;
+  background:linear-gradient(135deg,var(--gold) 0%,#fde68a 50%,var(--gold) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+header h1 .acc{background:linear-gradient(135deg,var(--primary) 0%,var(--cyan) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.platform-badge{background:linear-gradient(135deg,var(--bg3),var(--bg4));
+  color:var(--cyan);border:1px solid rgba(34,211,238,.2);border-radius:6px;
+  padding:3px 10px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.user-pill{background:var(--bg3);border:1px solid var(--border);border-radius:24px;
+  padding:4px 14px;font-size:.8rem;display:flex;align-items:center;gap:8px}
+.user-pill .role{background:linear-gradient(135deg,var(--gold),#fde68a);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700}
+.btn-sm{background:transparent;border:1px solid var(--border);color:var(--text2);
+  padding:4px 12px;border-radius:6px;cursor:pointer;font-size:.8rem;transition:var(--transition)}
+.btn-sm:hover{background:var(--bg3);color:var(--text);border-color:var(--border-light)}
+
+/* ── Tabs ────────────────────────────────────────────────────────────────── */
+nav{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;
+  padding:0 24px;overflow-x:auto;gap:0;-webkit-overflow-scrolling:touch}
+nav button{background:none;border:none;color:var(--text2);padding:14px 22px;cursor:pointer;
+  font-size:.85rem;font-weight:600;border-bottom:2px solid transparent;transition:var(--transition);
+  white-space:nowrap;position:relative}
+nav button.active{color:var(--primary);border-bottom-color:var(--primary)}
+nav button.active::after{content:'';position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);
+  width:60%;height:2px;background:var(--primary);filter:blur(4px);border-radius:1px}
+nav button:hover:not(.active){color:var(--text);background:rgba(255,255,255,.02)}
+
+/* ── Main ────────────────────────────────────────────────────────────────── */
+main{padding:20px 24px;max-width:1440px;margin:0 auto;width:100%}
+.refresh-bar{display:flex;align-items:center;gap:10px;margin-bottom:18px;font-size:.8rem;color:var(--text3);
+  flex-wrap:wrap}
+.refresh-bar .dot{width:8px;height:8px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 8px var(--green-glow);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+.btn-refresh{background:var(--bg3);border:1px solid var(--border);color:var(--text2);
+  padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:500;
+  transition:var(--transition);display:flex;align-items:center;gap:6px}
+.btn-refresh:hover{color:var(--primary);border-color:var(--primary);background:var(--bg4)}
+
+/* ── Auth overlay ────────────────────────────────────────────────────────── */
+#auth-overlay{position:fixed;inset:0;background:rgba(7,7,15,.95);display:flex;
+  align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(8px)}
+.auth-box{background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  border:1px solid var(--border);border-radius:16px;padding:40px;width:100%;max-width:380px;
+  box-shadow:var(--shadow)}
+.auth-box h2{font-size:1.5rem;font-weight:800;margin-bottom:4px;
+  background:linear-gradient(135deg,var(--gold) 0%,#fde68a 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.auth-box p{color:var(--text2);font-size:.85rem;margin-bottom:28px}
+.auth-tabs{display:flex;gap:8px;margin-bottom:24px}
+.auth-tabs button{flex:1;padding:10px;background:var(--bg3);border:1px solid var(--border);
+  color:var(--text2);border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;
+  transition:var(--transition)}
+.auth-tabs button.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:.78rem;color:var(--text2);margin-bottom:6px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.06em}
+.form-group input{width:100%;background:var(--bg3);border:1px solid var(--border);
+  color:var(--text);padding:11px 14px;border-radius:8px;font-size:.9rem;outline:none;
+  transition:var(--transition)}
+.form-group input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  border:none;color:#fff;padding:12px;border-radius:8px;cursor:pointer;font-size:.9rem;
+  font-weight:700;transition:var(--transition)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px var(--primary-glow)}
+.auth-error{color:var(--red);font-size:.8rem;margin-top:12px;text-align:center}
+
+/* ── Section headers ─────────────────────────────────────────────────────── */
+.section-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--text3);margin:24px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px}
+.section-title .count{background:var(--bg3);color:var(--text2);padding:1px 8px;border-radius:10px;
+  font-size:.7rem;font-weight:600}
+
+/* ── Grid layouts ────────────────────────────────────────────────────────── */
+.grid-4{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:16px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:12px;margin-bottom:16px}
+.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+
+/* ── Cards ────────────────────────────────────────────────────────────────── */
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);
+  padding:18px;overflow:hidden;transition:var(--transition)}
+.card:hover{border-color:var(--border-light)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.card-header .icon{font-size:1.2rem;width:28px;height:28px;display:flex;align-items:center;
+  justify-content:center;background:var(--bg3);border-radius:6px}
+.card-header h3{font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--text2)}
+
+/* ── Reset timers ────────────────────────────────────────────────────────── */
+.reset-card{background:linear-gradient(135deg,var(--card),var(--bg3));
+  border:1px solid var(--card-border);border-radius:var(--radius-sm);
+  padding:14px 16px;display:flex;align-items:center;justify-content:space-between;
+  transition:var(--transition)}
+.reset-card:hover{border-color:var(--border-light)}
+.reset-label{font-size:.75rem;color:var(--text2);font-weight:600;white-space:nowrap}
+.reset-timer{font-size:1rem;font-weight:800;color:var(--cyan);
+  font-variant-numeric:tabular-nums;letter-spacing:.02em;
+  background:rgba(34,211,238,.08);padding:2px 10px;border-radius:4px}
+
+/* ── Cycle cards ─────────────────────────────────────────────────────────── */
+.cycle-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);
+  padding:18px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;
+  transition:var(--transition)}
+.cycle-card:hover{border-color:var(--border-light);transform:translateY(-1px)}
+.cycle-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.cycle-card.day::before{background:linear-gradient(90deg,#f5a623,#fde68a,#f5a623);background-size:200% 100%;animation:shimmer 3s ease-in-out infinite}
+.cycle-card.night::before{background:linear-gradient(90deg,#4f8ef7,#818cf8,#4f8ef7);background-size:200% 100%;animation:shimmer 3s ease-in-out infinite}
+.cycle-card.warm::before{background:linear-gradient(90deg,#ef4444,#f97316,#ef4444);background-size:200% 100%;animation:shimmer 3s ease-in-out infinite}
+.cycle-card.cold::before{background:linear-gradient(90deg,#22d3ee,#818cf8,#22d3ee);background-size:200% 100%;animation:shimmer 3s ease-in-out infinite}
+.cycle-card.fass::before,.cycle-card.vome::before{background:linear-gradient(90deg,#a855f7,#ec4899,#a855f7);background-size:200% 100%;animation:shimmer 3s ease-in-out infinite}
+@keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.cycle-name{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.cycle-state{font-size:1.2rem;font-weight:800;background:linear-gradient(135deg,var(--gold),#fde68a);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cycle-timer{font-size:.85rem;color:var(--text2);font-variant-numeric:tabular-nums}
+.cycle-progress{height:4px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden}
+.cycle-progress-fill{height:100%;border-radius:2px;
+  background:linear-gradient(90deg,var(--primary),var(--cyan));transition:width 1s linear}
+
+/* ── Fissures ────────────────────────────────────────────────────────────── */
+.fissure-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.fissure-filters select,.fissure-filters input[type=checkbox]+label{
+  background:var(--bg3);border:1px solid var(--border);color:var(--text);
+  padding:6px 12px;border-radius:6px;font-size:.78rem;cursor:pointer;outline:none;
+  transition:var(--transition);font-family:inherit}
+.fissure-filters select:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-glow)}
+.fissure-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.fissure-card{background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;
+  padding:14px;position:relative;overflow:hidden;transition:var(--transition)}
+.fissure-card:hover{border-color:var(--primary);background:var(--card-hover);transform:translateY(-1px)}
+.fissure-tier{position:absolute;top:0;left:0;bottom:0;width:4px}
+.tier-Lith{background:linear-gradient(180deg,#22c55e,#16a34a)}
+.tier-Meso{background:linear-gradient(180deg,#3b82f6,#2563eb)}
+.tier-Neo{background:linear-gradient(180deg,#f97316,#ea580c)}
+.tier-Axi{background:linear-gradient(180deg,#f5a623,#d97706)}
+.tier-Requiem{background:linear-gradient(180deg,#a855f7,#9333ea)}
+.tier-Omnia{background:linear-gradient(180deg,#ec4899,#db2777)}
+.fissure-body{padding-left:14px}
+.fissure-title{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.fissure-meta{font-size:.75rem;color:var(--text2)}
+.badge{display:inline-block;padding:1px 8px;border-radius:4px;font-size:.65rem;font-weight:700}
+.badge-hard{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.badge-storm{background:rgba(168,85,247,.15);color:var(--purple);border:1px solid rgba(168,85,247,.3)}
+.badge-sp{background:rgba(245,166,35,.12);color:var(--gold);border:1px solid rgba(245,166,35,.3)}
+
+/* ── Mission items ───────────────────────────────────────────────────────── */
+.mission-list{display:flex;flex-direction:column;gap:6px}
+.mission-item{background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;
+  padding:10px 14px;display:flex;align-items:center;gap:12px;transition:var(--transition)}
+.mission-item:hover{background:var(--card-hover)}
+.mission-num{width:24px;height:24px;border-radius:50%;
+  background:linear-gradient(135deg,var(--bg3),var(--bg4));color:var(--text2);
+  font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mission-info{flex:1}
+.mission-type{font-size:.85rem;font-weight:700}
+.mission-node{font-size:.73rem;color:var(--text2);margin-top:2px}
+.mission-modifier{font-size:.72rem;color:var(--orange);margin-top:3px}
+
+/* ── Tables ──────────────────────────────────────────────────────────────── */
+.table-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid var(--card-border)}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+thead tr{background:linear-gradient(135deg,var(--bg3),var(--bg4))}
+th{text-align:left;padding:10px 14px;font-size:.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--text3)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(79,142,247,.04)}
+.table-card{overflow:hidden;border-radius:var(--radius);border:1px solid var(--card-border);
+  background:var(--card)}
+
+/* ── Nightwave ───────────────────────────────────────────────────────────── */
+.nw-challenge{background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;
+  padding:12px 14px;margin-bottom:6px;display:flex;gap:12px;align-items:flex-start;
+  transition:var(--transition)}
+.nw-challenge:hover{background:var(--card-hover)}
+.nw-type{padding:2px 8px;border-radius:4px;font-size:.68rem;font-weight:700;white-space:nowrap;flex-shrink:0}
+.nw-daily{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25)}
+.nw-weekly{background:rgba(79,142,247,.12);color:var(--primary);border:1px solid rgba(79,142,247,.25)}
+.nw-elite{background:rgba(168,85,247,.12);color:var(--purple);border:1px solid rgba(168,85,247,.25)}
+.nw-title{font-size:.85rem;font-weight:600;margin-bottom:2px}
+.nw-rep{font-size:.73rem;color:var(--gold)}
+
+/* ── Void trader ─────────────────────────────────────────────────────────── */
+.vt-status{font-size:.95rem;font-weight:700;margin-bottom:8px}
+.vt-status.active{color:var(--green)}
+.vt-status.inactive{color:var(--red)}
+.inventory-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;max-height:280px;overflow-y:auto}
+.inv-item{background:var(--bg2);border:1px solid var(--card-border);border-radius:6px;
+  padding:8px 10px;font-size:.75rem;transition:var(--transition)}
+.inv-item:hover{background:var(--card-hover)}
+.inv-item-name{color:var(--text);margin-bottom:2px}
+.inv-item-cost{color:var(--gold);font-size:.72rem}
+
+/* ── Events / Invasions ──────────────────────────────────────────────────── */
+.event-item{background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;
+  padding:14px 16px;margin-bottom:6px;transition:var(--transition)}
+.event-item:hover{background:var(--card-hover)}
+.event-name{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.event-meta{font-size:.75rem;color:var(--text2);display:flex;flex-wrap:wrap;gap:10px}
+.event-timer{color:var(--orange)}
+.progress-bar{height:6px;background:var(--bg3);border-radius:3px;margin-top:10px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--cyan));
+  border-radius:3px;transition:width .5s ease}
+
+/* ── Alerts tab ──────────────────────────────────────────────────────────── */
+.alert-rule-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);
+  padding:16px;display:flex;align-items:center;gap:14px;transition:var(--transition)}
+.alert-rule-card:hover{border-color:var(--primary);background:var(--card-hover)}
+.alert-enabled-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.alert-enabled-dot.on{background:var(--green);box-shadow:0 0 8px var(--green-glow)}
+.alert-enabled-dot.off{background:var(--border)}
+.alert-rule-info{flex:1;min-width:0}
+.alert-rule-name{font-size:.9rem;font-weight:700}
+.alert-rule-type{font-size:.73rem;color:var(--text2);margin-top:2px}
+.alert-rule-actions{display:flex;gap:6px;flex-shrink:0}
+.btn-icon{background:var(--bg3);border:1px solid var(--border);color:var(--text2);
+  padding:6px 10px;border-radius:6px;cursor:pointer;font-size:.78rem;transition:var(--transition)}
+.btn-icon:hover{color:var(--primary);border-color:var(--primary)}
+.btn-icon.danger:hover{color:var(--red);border-color:var(--red)}
+.btn-add{background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  border:none;color:#fff;padding:10px 18px;border-radius:8px;cursor:pointer;
+  font-size:.85rem;font-weight:600;transition:var(--transition);display:flex;align-items:center;gap:6px}
+.btn-add:hover{transform:translateY(-1px);box-shadow:0 4px 16px var(--primary-glow)}
+
+/* ── Modal ────────────────────────────────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;
+  display:flex;align-items:center;justify-content:center;padding:16px;
+  backdrop-filter:blur(4px)}
+.modal{background:var(--bg2);border:1px solid var(--card-border);border-radius:16px;
+  width:100%;max-width:540px;max-height:90vh;display:flex;flex-direction:column;
+  box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.modal-header{padding:18px 22px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between}
+.modal-header h3{font-size:1rem;font-weight:700}
+.modal-body{padding:22px;overflow-y:auto;flex:1}
+.modal-footer{padding:16px 22px;border-top:1px solid var(--border);
+  display:flex;gap:10px;justify-content:flex-end}
+.btn-cancel{background:var(--bg3);border:1px solid var(--border);color:var(--text2);
+  padding:10px 18px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;
+  transition:var(--transition)}
+.btn-cancel:hover{color:var(--text);background:var(--bg4)}
+.btn-save{background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  border:none;color:#fff;padding:10px 18px;border-radius:8px;cursor:pointer;
+  font-size:.85rem;font-weight:600;transition:var(--transition)}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 4px 16px var(--primary-glow)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+select,textarea{background:var(--bg3);border:1px solid var(--border);color:var(--text);
+  padding:9px 12px;border-radius:8px;font-size:.85rem;outline:none;transition:var(--transition);
+  width:100%;font-family:inherit}
+select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
+textarea{resize:vertical;min-height:70px}
+.cond-section{background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+  padding:14px;margin-top:12px}
+
+/* ── Toggles ─────────────────────────────────────────────────────────────── */
+.toggle{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:.85rem;user-select:none}
+.toggle input{display:none}
+.toggle-track{width:38px;height:22px;background:var(--border);border-radius:11px;
+  transition:var(--transition);position:relative;flex-shrink:0}
+.toggle input:checked+.toggle-track{background:var(--primary)}
+.toggle-track::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;
+  background:#fff;border-radius:50%;transition:var(--transition)}
+.toggle input:checked+.toggle-track::after{left:19px}
+
+/* ── Settings ────────────────────────────────────────────────────────────── */
+.settings-section{background:var(--card);border:1px solid var(--card-border);
+  border-radius:var(--radius);padding:22px;margin-bottom:16px}
+.settings-section h3{font-size:.9rem;font-weight:700;margin-bottom:16px;color:var(--text);
+  display:flex;align-items:center;gap:8px}
+.field-hint{font-size:.73rem;color:var(--text3);margin-top:5px;line-height:1.4}
+
+/* ── Log ──────────────────────────────────────────────────────────────────── */
+.log-entry{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);
+  font-size:.78rem;align-items:flex-start}
+.log-entry:last-child{border-bottom:none}
+.log-time{color:var(--text3);white-space:nowrap;font-variant-numeric:tabular-nums;flex-shrink:0}
+.log-msg{color:var(--text2);word-break:break-word}
+
+/* ── Admin ────────────────────────────────────────────────────────────────── */
+.role-badge{padding:3px 10px;border-radius:4px;font-size:.7rem;font-weight:700}
+.role-admin{background:rgba(245,166,35,.12);color:var(--gold);border:1px solid rgba(245,166,35,.3)}
+.role-user{background:rgba(100,116,139,.12);color:var(--text3);border:1px solid var(--border)}
+
+/* ── Empty / Loading / Messages ──────────────────────────────────────────── */
+.empty{text-align:center;color:var(--text3);padding:40px 20px;font-size:.85rem}
+.loading{text-align:center;color:var(--text3);padding:40px;font-size:.85rem;animation:pulse 1.5s ease-in-out infinite}
+.loading::after{content:'...'}
+.error-msg{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);
+  border-radius:8px;padding:10px 14px;font-size:.82rem;margin-bottom:12px}
+.success-msg{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--green);
+  border-radius:8px;padding:10px 14px;font-size:.82rem;margin-bottom:12px}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600}
+.tag-green{background:rgba(34,197,94,.12);color:var(--green)}
+.tag-red{background:rgba(239,68,68,.12);color:var(--red)}
+.tag-blue{background:rgba(79,142,247,.12);color:var(--primary)}
+.tag-orange{background:rgba(249,115,22,.12);color:var(--orange)}
+.tag-purple{background:rgba(168,85,247,.12);color:var(--purple)}
+.tag-gold{background:rgba(245,166,35,.12);color:var(--gold)}
+
+/* ── Arcane Search ────────────────────────────────────────────────────────── */
+.arcane-search-box{position:relative;margin-bottom:14px}
+.arcane-search-box input{width:100%;background:var(--bg2);border:1px solid var(--border);
+  color:var(--text);padding:12px 14px 12px 42px;border-radius:8px;font-size:.9rem;
+  outline:none;transition:var(--transition);font-family:inherit}
+.arcane-search-box input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
+.arcane-search-box .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  color:var(--text3);font-size:1rem}
+.arcane-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.arcane-filters select{background:var(--bg3);border:1px solid var(--border);color:var(--text);
+  padding:5px 10px;border-radius:6px;font-size:.75rem;cursor:pointer;outline:none;font-family:inherit}
+.arcane-filters select:focus{border-color:var(--primary)}
+.arcane-stats{font-size:.73rem;color:var(--text3);margin-bottom:10px;display:flex;gap:16px;flex-wrap:wrap}
+.arcane-stats span{display:flex;align-items:center;gap:4px}
+.arcane-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;
+  max-height:500px;overflow-y:auto;padding:2px}
+.arcane-item{background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;
+  padding:12px;transition:var(--transition);cursor:default}
+.arcane-item:hover{border-color:var(--primary);background:var(--card-hover);transform:translateY(-1px)}
+.arcane-item .name{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:2px}
+.arcane-item .rarity{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.arcane-item .rarity.Common{color:#94a3b8}
+.arcane-item .rarity.Uncommon{color:var(--green)}
+.arcane-item .rarity.Rare{color:var(--primary)}
+.arcane-item .rarity.Legendary{color:var(--gold)}
+.arcane-item .effect{font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.4}
+.arcane-item .location{font-size:.68rem;color:var(--text3);margin-top:4px}
+.arcane-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);
+  padding:18px;margin-bottom:20px}
+.arcane-card .card-header{margin-bottom:10px}
+
+/* ── Archon Shard Display ────────────────────────────────────────────────── */
+.shard-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.shard-item{background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;
+  padding:12px;text-align:center;transition:var(--transition)}
+.shard-item:hover{border-color:var(--purple);background:var(--card-hover);transform:translateY(-1px)}
+.shard-item .shard-icon{font-size:1.5rem;margin-bottom:4px}
+.shard-item .shard-name{font-size:.82rem;font-weight:700}
+.shard-item .shard-color{font-size:.65rem;font-weight:600;text-transform:uppercase;
+  letter-spacing:.06em}
+.shard-azure .shard-color{color:var(--primary)}
+.shard-crimson .shard-color{color:var(--red)}
+.shard-amber .shard-color{color:var(--gold)}
+.shard-emerald .shard-color{color:var(--green)}
+.shard-violet .shard-color{color:var(--purple)}
+.shard-topaz .shard-color{color:var(--orange)}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media(max-width:900px){
+  .grid-2{grid-template-columns:1fr}
+  .grid-4{grid-template-columns:repeat(2,1fr)}
+  header{padding:0 16px}
+  main{padding:16px}
+  nav{padding:0 12px}
+  nav button{padding:12px 14px;font-size:.8rem}
+  .fissure-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+}
+@media(max-width:640px){
+  body{font-size:14px}
+  header{height:54px;padding:0 12px;gap:10px}
+  header h1{font-size:1rem}
+  main{padding:12px}
+  .grid-4{grid-template-columns:1fr 1fr;gap:8px}
+  .grid-3{grid-template-columns:1fr;gap:8px}
+  .grid-2{grid-template-columns:1fr;gap:8px}
+  .fissure-grid{grid-template-columns:1fr}
+  .fissure-filters{flex-direction:column}
+  .fissure-filters select{width:100%}
+  .reset-card{padding:12px 14px}
+  .reset-label{font-size:.7rem}
+  .reset-timer{font-size:.85rem;padding:2px 8px}
+  .cycle-card{padding:14px}
+  .card{padding:14px}
+  .section-title{margin:18px 0 10px}
+  .form-row{grid-template-columns:1fr}
+  .auth-box{padding:28px 24px;margin:0 12px}
+  .arcane-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));max-height:400px}
+  .shard-grid{grid-template-columns:repeat(2,1fr)}
+  .inventory-grid{grid-template-columns:repeat(2,1fr);max-height:200px}
+  .arcane-stats{flex-direction:column;gap:4px}
+  .alert-rule-card{flex-wrap:wrap}
+  .alert-rule-actions{width:100%;justify-content:flex-end;margin-top:8px}
+  .modal{padding:0;border-radius:12px}
+  .modal-body{padding:16px}
+}
+@media(max-width:400px){
+  .grid-4{grid-template-columns:1fr}
+  .shard-grid{grid-template-columns:1fr}
+  nav button{padding:10px 10px;font-size:.75rem}
+  .arcane-grid{grid-template-columns:1fr;max-height:300px}
+}
+</style>
+</head>
+<body>
+
+<!-- Auth Overlay -->
+<div id="auth-overlay">
+  <div class="auth-box">
+    <h2>⚙️ Warframe<span class="acc">Portal</span></h2>
+    <p>Live worldstate tracker & alert system</p>
+    <div class="auth-tabs">
+      <button class="active" onclick="showAuthTab('login')">Login</button>
+      <button onclick="showAuthTab('register')">Register</button>
+    </div>
+    <div id="auth-login">
+      <div class="form-group"><label>Username</label><input id="login-user" type="text" autocomplete="username"/></div>
+      <div class="form-group"><label>Password</label><input id="login-pass" type="password" autocomplete="current-password"/></div>
+      <button class="btn-primary" onclick="doLogin()">Sign In</button>
+    </div>
+    <div id="auth-register" style="display:none">
+      <div class="form-group"><label>Username</label><input id="reg-user" type="text"/></div>
+      <div class="form-group"><label>Email</label><input id="reg-email" type="email"/></div>
+      <div class="form-group"><label>Password (min 8 chars)</label><input id="reg-pass" type="password"/></div>
+      <button class="btn-primary" onclick="doRegister()">Create Account</button>
+    </div>
+    <div id="auth-error" class="auth-error"></div>
+  </div>
+</div>
+
+<!-- App Shell -->
+<header>
+  <h1>⚙️ Warframe<span class="acc">Portal</span></h1>
+  <span class="platform-badge" id="platform-badge">PC</span>
+  <div class="header-right">
+    <div class="user-pill" id="user-pill" style="display:none">
+      <span id="user-name"></span>
+      <span class="role" id="user-role"></span>
+      <button class="btn-sm" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+</header>  <nav>
+  <button class="active" onclick="switchTab('worldstate',this)">🌐 Worldstate</button>
+  <button onclick="switchTab('arcanes',this)">💎 Arcanes</button>
+  <button onclick="switchTab('shards',this)">💠 Shards</button>
+  <button onclick="switchTab('alerts',this)">🔔 Alerts</button>
+  <button onclick="switchTab('settings',this)">⚙️ Settings</button>
+</nav>
+
+<main>
+
+<!-- ── WORLDSTATE TAB ── -->
+<div id="tab-worldstate">
+  <div class="refresh-bar">
+    <div class="dot"></div>
+    <span id="last-refresh">Loading…</span>
+    <button class="btn-refresh" onclick="loadWorldstate()">↻ Refresh</button>
+  </div>
+
+  <div class="section-title">⏱ Resets</div>
+  <div class="grid-4" id="reset-timers">
+    <div class="reset-card"><span class="reset-label">🌅 Daily Reset (UTC)</span><span class="reset-timer" id="timer-daily">--:--:--</span></div>
+    <div class="reset-card"><span class="reset-label">📅 Weekly Reset (UTC)</span><span class="reset-timer" id="timer-weekly">--:--:--</span></div>
+  </div>
+
+  <div class="section-title">🌍 Cycles</div>
+  <div class="grid-4" id="cycles-grid"><div class="loading">Loading cycles…</div></div>
+
+  <div class="section-title">🌀 Void Fissures <span class="count" id="fissure-count"></span></div>
+  <div class="fissure-filters">
+    <select id="f-tier" onchange="renderFissures()">
+      <option value="">All Tiers</option>
+      <option>Lith</option><option>Meso</option><option>Neo</option>
+      <option>Axi</option><option>Requiem</option><option>Omnia</option>
+    </select>
+    <select id="f-mission" onchange="renderFissures()">
+      <option value="">All Missions</option>
+      <option>Defense</option><option>Survival</option><option>Excavation</option>
+      <option>Interception</option><option>Capture</option><option>Exterminate</option>
+      <option>Disruption</option><option>Mobile Defense</option><option>Spy</option>
+      <option>Rescue</option><option>Sabotage</option><option>Void Cascade</option>
+      <option>Void Armageddon</option><option>Void Flood</option>
+    </select>
+    <select id="f-type" onchange="renderFissures()">
+      <option value="">Normal + Steel Path</option>
+      <option value="normal">Normal Only</option>
+      <option value="hard">Steel Path Only</option>
+      <option value="storm">Void Storms Only</option>
+    </select>
+  </div>
+  <div class="fissure-grid" id="fissure-grid"><div class="loading">Loading fissures…</div></div>
+
+  <div class="section-title" style="margin-top:20px">⚔️ Sortie <span class="count" id="sortie-status"></span></div>
+  <div class="card" id="sortie-card"><div class="loading">Loading…</div></div>
+
+  <div class="section-title">🎯 Arbitration</div>
+  <div class="card" id="arb-card"><div class="loading">Loading…</div></div>
+
+  <div class="section-title">🦅 Archon Hunt</div>
+  <div class="card" id="archon-card"><div class="loading">Loading…</div></div>
+
+  <div class="section-title">🌊 Nightwave</div>
+  <div class="card" id="nightwave-card"><div class="loading">Loading…</div></div>
+
+  <div class="section-title">📣 Events</div>
+  <div id="events-list"><div class="loading">Loading…</div></div>
+
+  <div class="section-title">🛒 Void Traders</div>
+  <div class="grid-2" id="vt-grid"><div class="loading">Loading…</div></div>
+
+  <div class="section-title">⚡ Invasions</div>
+  <div id="invasions-list"><div class="loading">Loading…</div></div>
+
+  <div class="section-title">🔔 In-Game Alerts</div>
+  <div id="game-alerts-list"><div class="loading">Loading…</div></div>
+
+  <div class="grid-2" style="margin-top:20px">
+    <div>
+      <div class="section-title">🏆 Steel Path Honors</div>
+      <div class="card" id="sp-card"><div class="loading">Loading…</div></div>
+    </div>
+    <div>
+      <div class="section-title">🛍️ Darvo Daily Deal</div>
+      <div class="card" id="darvo-card"><div class="loading">Loading…</div></div>
+    </div>
+  </div>
+
+  <div class="section-title">🔱 Deep Archimedea</div>
+  <div class="card" id="archimedea-card"><div class="loading">Loading…</div></div>
+
+  <div class="section-title">🏗️ Construction Progress</div>
+  <div class="grid-4" id="construction-grid"><div class="loading">Loading…</div></div>
+
+  <div class="section-title">📰 News</div>
+  <div id="news-list"><div class="loading">Loading…</div></div>
+</div>
+
+<!-- ── ARCANES TAB ── -->
+<div id="tab-arcanes" style="display:none">
+  <div class="section-title" style="margin-bottom:6px">💎 Arcane Search</div>
+  <div class="arcane-card">
+    <div class="arcane-search-box">
+      <span class="search-icon">🔍</span>
+      <input id="arcane-search" type="text" placeholder="Search by name, effect, or location…" oninput="filterArcanes()"/>
+    </div>
+    <div class="arcane-filters">
+      <select id="arcane-rarity" onchange="filterArcanes()">
+        <option value="">All Rarities</option>
+        <option>Common</option><option>Uncommon</option><option>Rare</option><option>Legendary</option>
+      </select>
+      <select id="arcane-location" onchange="filterArcanes()">
+        <option value="">All Locations</option>
+      </select>
+    </div>
+    <div class="arcane-stats">
+      <span>📦 <span id="arcane-total">0</span> arcanes loaded</span>
+      <span>🔍 <span id="arcane-matched">0</span> matching</span>
+      <span>📍 <span id="arcane-locations">0</span> locations</span>
+    </div>
+  </div>
+  <div class="arcane-grid" id="arcane-grid"><div class="loading">Loading arcane data…</div></div>
+</div>
+
+<!-- ── ARCHON SHARDS TAB ── -->
+<div id="tab-shards" style="display:none">
+  <div class="section-title">💠 Archon Shards <span class="count" id="shard-count"></span></div>
+  <div class="shard-grid" id="shard-grid"><div class="loading">Loading archon shard data…</div></div>
+  <div class="section-title" style="margin-top:20px">💎 Shard Effects by Color</div>
+  <div class="grid-2" id="shard-effects"><div class="loading">Loading…</div></div>
+</div>
+
+<!-- ── ALERTS TAB ── -->
+<div id="tab-alerts" style="display:none">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+    <div>
+      <div style="font-size:1rem;font-weight:700">Alert Rules</div>
+      <div style="font-size:.8rem;color:var(--text3);margin-top:2px">Get notified via Apprise when events occur</div>
+    </div>
+    <button class="btn-add" onclick="openAlertModal()">＋ New Rule</button>
+  </div>
+  <div id="alert-rules-list"><div class="loading">Loading…</div></div>
+
+  <div class="section-title" style="margin-top:24px">📋 Notification Log <span style="color:var(--text3);font-weight:400;font-size:.75rem">(last 200)</span></div>
+  <div class="card" id="alert-log-container">
+    <div id="alert-log-list"><div class="loading">Loading log…</div></div>
+  </div>
+</div>
+
+<!-- ── SETTINGS TAB ── -->
+<div id="tab-settings" style="display:none">
+  <div class="grid-2">
+    <div>
+      <div class="settings-section">
+        <h3>🔔 Apprise Configuration</h3>
+        <div class="form-group">
+          <label>Apprise API URL</label>
+          <input id="set-apprise-url" type="text" placeholder="http://apprise-api:8000"/>
+          <div class="field-hint">URL of your apprise-api instance. Leave blank to use the server default.</div>
+        </div>
+        <div class="form-group">
+          <label>Default Notification URLs</label>
+          <textarea id="set-default-urls" rows="4" placeholder="discord://webhookid/token&#10;telegram://bottoken/chatid&#10;slack://tokenA/tokenB/tokenC"></textarea>
+          <div class="field-hint">One Apprise URL per line. Used as fallback if an alert rule has no URLs set.</div>
+        </div>
+        <button class="btn-primary" onclick="saveSettings()" style="width:auto;padding:10px 22px">Save Apprise Settings</button>
+        <div id="settings-msg" style="margin-top:10px"></div>
+      </div>
+
+      <div class="settings-section">
+        <h3>🔑 Change Password</h3>
+        <div class="form-group"><label>Current Password</label><input id="pw-current" type="password"/></div>
+        <div class="form-group"><label>New Password</label><input id="pw-new" type="password"/></div>
+        <div class="form-group"><label>Confirm New Password</label><input id="pw-confirm" type="password"/></div>
+        <button class="btn-primary" onclick="changePassword()" style="width:auto;padding:10px 22px">Update Password</button>
+        <div id="pw-msg" style="margin-top:10px"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="settings-section">
+        <h3>ℹ️ Apprise URL Reference</h3>
+        <p style="font-size:.8rem;color:var(--text2);margin-bottom:12px">Common Apprise notification URL formats:</p>
+        <div class="table-wrap">
+        <table>
+          <tr><th>Service</th><th>URL Format</th></tr>
+          <tr><td>Discord</td><td><code style="font-size:.75rem;color:var(--cyan)">discord://webhook_id/token</code></td></tr>
+          <tr><td>Telegram</td><td><code style="font-size:.75rem;color:var(--cyan)">tgram://bottoken/chatid</code></td></tr>
+          <tr><td>Slack</td><td><code style="font-size:.75rem;color:var(--cyan)">slack://T/B/S</code></td></tr>
+          <tr><td>Email</td><td><code style="font-size:.75rem;color:var(--cyan)">mailto://user:pass@gmail.com</code></td></tr>
+          <tr><td>Pushover</td><td><code style="font-size:.75rem;color:var(--cyan)">pover://user@token</code></td></tr>
+          <tr><td>Gotify</td><td><code style="font-size:.75rem;color:var(--cyan)">gotify://host/token</code></td></tr>
+          <tr><td>Ntfy</td><td><code style="font-size:.75rem;color:var(--cyan)">ntfy://topic</code></td></tr>
+          <tr><td>Matrix</td><td><code style="font-size:.75rem;color:var(--cyan)">matrix://user:pass@host</code></td></tr>
+          <tr><td>Signal</td><td><code style="font-size:.75rem;color:var(--cyan)">signal://phone/number</code></td></tr>
+          <tr><td>Whatsapp</td><td><code style="font-size:.75rem;color:var(--cyan)">whatsapp://access_token/phone</code></td></tr>
+        </table>
+        </div>
+        <p style="font-size:.73rem;color:var(--text3);margin-top:10px">
+          Full list: <a href="https://github.com/caronc/apprise/wiki" target="_blank" style="color:var(--primary)">apprise wiki ↗</a>
+        </p>
+      </div>
+
+      <div class="settings-section" id="admin-section" style="display:none">
+        <h3>👑 Admin: User Management</h3>
+        <div id="admin-users-table"><div class="loading">Loading…</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- Alert Rule Modal -->
+<div class="modal-overlay" id="alert-modal" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">New Alert Rule</h3>
+      <button class="btn-icon" onclick="closeAlertModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Rule Name</label>
+        <input id="m-name" type="text" placeholder="e.g. Axi Defense Fissure"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Event Type</label>
+          <select id="m-type" onchange="updateCondFields()">
+            <option value="fissure">Void Fissure</option>
+            <option value="sortie">Sortie (new daily)</option>
+            <option value="arbitration">Arbitration</option>
+            <option value="archonHunt">Archon Hunt (new weekly)</option>
+            <option value="voidTrader">Void Trader arrival</option>
+            <option value="nightwave">Nightwave update</option>
+            <option value="event">In-Game Event</option>
+            <option value="invasion">Invasion</option>
+            <option value="alert">In-Game Alert</option>
+            <option value="steelPath">Steel Path (Acolytes + Rotation)</option>
+            <option value="dailyReset">Daily Reset (00:00 UTC)</option>
+            <option value="weeklyReset">Weekly Reset (Mon 00:00 UTC)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Cooldown (minutes)</label>
+          <input id="m-cooldown" type="number" value="5" min="1" max="10080"/>
+        </div>
+      </div>
+
+      <div id="cond-fissure" class="cond-section">
+        <div style="font-size:.72rem;color:var(--text2);margin-bottom:10px;font-weight:700">FILTER CONDITIONS <span style="color:var(--text3);font-weight:400">(leave blank = match any)</span></div>
+        <div class="form-row">
+          <div class="form-group"><label>Tier</label>
+            <select id="c-tier"><option value="">Any</option>
+              <option>Lith</option><option>Meso</option><option>Neo</option>
+              <option>Axi</option><option>Requiem</option><option>Omnia</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Mission Type</label>
+            <select id="c-mission"><option value="">Any</option>
+              <option>Defense</option><option>Survival</option><option>Excavation</option>
+              <option>Interception</option><option>Capture</option><option>Exterminate</option>
+              <option>Disruption</option><option>Mobile Defense</option><option>Spy</option>
+              <option>Void Cascade</option><option>Void Armageddon</option><option>Void Flood</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Enemy Faction (keyword)</label>
+            <input id="c-enemy" type="text" placeholder="e.g. Corpus, Grineer"/>
+          </div>
+          <div class="form-group"><label>Variant</label>
+            <select id="c-hard">
+              <option value="">Any (Normal + SP)</option>
+              <option value="false">Normal Only</option>
+              <option value="true">Steel Path Only</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Void Storm</label>
+          <select id="c-storm">
+            <option value="">Any</option>
+            <option value="true">Void Storms Only</option>
+            <option value="false">No Void Storms</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="cond-arbitration" class="cond-section" style="display:none">
+        <div style="font-size:.72rem;color:var(--text2);margin-bottom:10px;font-weight:700">FILTER CONDITIONS</div>
+        <div class="form-row">
+          <div class="form-group"><label>Mission Type</label>
+            <select id="c-arb-mission"><option value="">Any</option>
+              <option>Defense</option><option>Survival</option><option>Excavation</option>
+              <option>Interception</option><option>Disruption</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Enemy (keyword)</label>
+            <input id="c-arb-enemy" type="text" placeholder="e.g. Infested"/>
+          </div>
+        </div>
+      </div>
+
+      <div id="cond-voidTrader" class="cond-section" style="display:none">
+        <div style="font-size:.72rem;color:var(--text2);margin-bottom:10px;font-weight:700">FILTER CONDITIONS</div>
+        <div class="form-group"><label>Item Keyword (alert if trader carries item matching)</label>
+          <input id="c-vt-item" type="text" placeholder="e.g. Primed, Mod name — leave blank for any arrival"/>
+        </div>
+      </div>
+
+      <div id="cond-keyword" class="cond-section" style="display:none">
+        <div style="font-size:.72rem;color:var(--text2);margin-bottom:10px;font-weight:700">FILTER CONDITIONS</div>
+        <div class="form-group"><label>Keyword (in event name/node)</label>
+          <input id="c-keyword" type="text" placeholder="Leave blank = alert on any"/>
+        </div>
+      </div>
+
+      <div id="cond-alert-game" class="cond-section" style="display:none">
+        <div style="font-size:.72rem;color:var(--text2);margin-bottom:10px;font-weight:700">FILTER CONDITIONS</div>
+        <div class="form-row">
+          <div class="form-group"><label>Mission Type</label>
+            <select id="c-alert-mission"><option value="">Any</option>
+              <option>Defense</option><option>Survival</option><option>Excavation</option>
+              <option>Capture</option><option>Exterminate</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Reward keyword</label>
+            <input id="c-alert-kw" type="text" placeholder="e.g. Aura, Catalyst"/>
+          </div>
+        </div>
+      </div>
+
+      <div id="cond-steelpath" class="cond-section" style="display:none">
+        <div style="font-size:.72rem;color:var(--text2);margin-bottom:10px;font-weight:700">FILTER CONDITIONS</div>
+        <div class="form-group"><label>Acolyte Name Keyword (alert when this Acolyte spawns)</label>
+          <input id="c-sp-keyword" type="text" placeholder="e.g. Torment, Malice, Angst, Mania — leave blank for any Acolyte"/>
+        </div>
+        <div class="toggle" style="margin-top:8px">
+          <input type="checkbox" id="c-sp-rotation"/>
+          <div class="toggle-track"></div>
+          <span>Also alert on weekly rotation change</span>
+        </div>
+        <div class="field-hint" style="margin-top:6px">When enabled, fires on: Acolyte spawns + rotation changes. When disabled, fires only on rotation changes.</div>
+      </div>
+
+      <div class="form-group" style="margin-top:14px">
+        <label>Apprise Notification URLs <span style="color:var(--text3);font-weight:400">(one per line — overrides your defaults)</span></label>
+        <textarea id="m-urls" rows="3" placeholder="discord://webhookid/token&#10;tgram://bottoken/chatid&#10;(leave blank to use your default URLs from Settings)"></textarea>
+      </div>
+
+      <label class="toggle" style="margin-top:8px">
+        <input type="checkbox" id="m-enabled" checked/>
+        <div class="toggle-track"></div>
+        <span>Enabled</span>
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeAlertModal()">Cancel</button>
+      <button class="btn-save" onclick="saveAlert()">Save Rule</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+let currentUser = null;
+let worldstateData = null;
+let editingAlertId = null;
+let countdownIntervals = [];
+let arcaneData = [];
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+// ─── Archon Shard Data ────────────────────────────────────────────────────────
+let shardData = {};
+
+async function loadShardData() {
+  try {
+    const r = await fetch('/api/archon-shards');
+    shardData = await r.json();
+    document.getElementById('shard-count').textContent = Object.keys(shardData).length;
+  } catch(e) {}
+}
+
+async function loadShards() {
+  if (!Object.keys(shardData).length) return;
+  const grid = document.getElementById('shard-grid');
+  const effectsGrid = document.getElementById('shard-effects');
+  
+  // Color mapping for shard codes
+  const shardColorInfo = {
+    'ACC_BLUE': {color:'Azure',icon:'🔷',css:'shard-azure'},
+    'ACC_RED': {color:'Crimson',icon:'🔴',css:'shard-crimson'},
+    'ACC_YELLOW': {color:'Amber',icon:'🟡',css:'shard-amber'},
+    'ACC_GREEN': {color:'Emerald',icon:'🟢',css:'shard-emerald'},
+    'ACC_VIOLET': {color:'Violet',icon:'🟣',css:'shard-violet'},
+    'ACC_ORANGE': {color:'Topaz',icon:'🟠',css:'shard-topaz'},
+  };
+  
+  // Shard catalog grid
+  grid.innerHTML = Object.entries(shardData).map(([code, name]) => {
+    const info = shardColorInfo[code] || {color:name,icon:'💎',css:''};
+    return `<div class="shard-item ${info.css}">
+      <div class="shard-icon">${info.icon}</div>
+      <div class="shard-name">${escHtml(name)}</div>
+      <div class="shard-color">${info.color}</div>
+    </div>`;
+  }).join('');
+  
+  // Detailed effects section (simplified - shows what each shard type does)
+  const shardEffects = {
+    'Azure': {icon:'🔷',desc:'+Max Energy, +Energy Max, +Energy Orb Effectiveness, +Cast Speed, +Sprint Speed'},
+    'Crimson': {icon:'🔴',desc:'+Melee Crit Damage, +Primary Crit Damage, +Secondary Crit Damage, +Ability Strength, +Duration'},
+    'Amber': {icon:'🟡',desc:'+Parkour Velocity, +Aim Glide/Wall Latch, +Health Orb Effectiveness, +Shield Recharge, +Dodge Speed'},
+    'Emerald': {icon:'🟢',desc:'+Toxin Damage (Melee), +Corrosive Damage (Primary), +Health Regen, +Shield Regen, +Orb Radius'},
+    'Violet': {icon:'🟣',desc:'+Electric Damage (Melee), +Magnetic Damage (Primary), +Crit Damage (on Electric Proc), +Ability Damage (on Electric Proc), +Shield Cap'},
+    'Topaz': {icon:'🟠',desc:'+Heat Damage (Melee), +Radiation Damage (Primary), +Crit Chance (on Blast Proc), +Ability Damage (on Blast Proc), +Armor per Blast Kill'},
+  };
+  
+  effectsGrid.innerHTML = Object.entries(shardEffects).map(([color, info]) =>
+    `<div class="card">
+      <div class="card-header"><span class="icon">${info.icon}</span><h3>${color} Archon Shard</h3></div>
+      <div style="font-size:.78rem;color:var(--text2);line-height:1.6">${info.desc}</div>
+    </div>`
+  ).join('');
+}
+
+async function init() {
+  const res = await fetch('/api/auth/me');
+  currentUser = await res.json();
+  if (currentUser) {
+    showApp();
+  }
+  startResetTimers();
+  // Preload arcane data and shard data in background
+  loadArcaneData();
+  loadShardData();
+}
+
+async function showApp() {
+  document.getElementById('auth-overlay').style.display = 'none';
+  document.getElementById('user-pill').style.display = 'flex';
+  document.getElementById('user-name').textContent = currentUser.username;
+  document.getElementById('user-role').textContent = currentUser.role === 'admin' ? '👑 Admin' : '';
+  loadWorldstate();
+}
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+function showAuthTab(tab) {
+  document.getElementById('auth-login').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('auth-register').style.display = tab === 'register' ? '' : 'none';
+  document.querySelectorAll('.auth-tabs button').forEach((b,i) => {
+    b.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register'));
+  });
+  document.getElementById('auth-error').textContent = '';
+}
+
+async function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  const r = await fetch('/api/auth/login', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+  const d = await r.json();
+  if (!r.ok) { document.getElementById('auth-error').textContent = d.error; return; }
+  currentUser = d;
+  showApp();
+}
+
+async function doRegister() {
+  const u = document.getElementById('reg-user').value.trim();
+  const e = document.getElementById('reg-email').value.trim();
+  const p = document.getElementById('reg-pass').value;
+  const r = await fetch('/api/auth/register', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,email:e,password:p})});
+  const d = await r.json();
+  if (!r.ok) { document.getElementById('auth-error').textContent = d.error; return; }
+  currentUser = d;
+  showApp();
+}
+
+async function doLogout() {
+  await fetch('/api/auth/logout', {method:'POST'});
+  location.reload();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const overlay = document.getElementById('auth-overlay');
+  if (overlay.style.display === 'none') return;
+  const loginVisible = document.getElementById('auth-login').style.display !== 'none';
+  loginVisible ? doLogin() : doRegister();
+});
+
+// ─── Tab Navigation ───────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  ['worldstate','arcanes','shards','alerts','settings'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name?'':'none';
+  });
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (name==='arcanes') { /* arcane data preloaded */ }
+  if (name==='shards') loadShards();
+  if (name==='alerts' && currentUser) loadAlerts();
+  if (name==='settings' && currentUser) loadSettings();
+}
+
+// ─── Reset Timers ─────────────────────────────────────────────────────────────
+function startResetTimers() {
+  function update() {
+    const now = new Date();
+    const utcH = now.getUTCHours(), utcM = now.getUTCMinutes(), utcS = now.getUTCSeconds();
+    const secSinceMidnight = utcH*3600 + utcM*60 + utcS;
+    const dailySec = 86400 - secSinceMidnight;
+    document.getElementById('timer-daily').textContent = fmtTime(dailySec);
+    const dow = now.getUTCDay();
+    const daysToMon = (8 - dow) % 7 || 7;
+    const weeklySec = daysToMon * 86400 - secSinceMidnight;
+    document.getElementById('timer-weekly').textContent = fmtTime(weeklySec);
+  }
+  update();
+  setInterval(update, 1000);
+}
+
+function fmtTime(secs) {
+  if (secs < 0) secs = 0;
+  const d = Math.floor(secs/86400);
+  const h = Math.floor((secs%86400)/3600);
+  const m = Math.floor((secs%3600)/60);
+  const s = secs%60;
+  if (d > 0) return `${d}d ${pad(h)}:${pad(m)}:${pad(s)}`;
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
+}
+
+function pad(n) { return String(Math.floor(n)).padStart(2,'0'); }
+
+function secsUntil(isoStr) {
+  if (!isoStr) return 0;
+  return Math.max(0, Math.floor((new Date(isoStr) - Date.now()) / 1000));
+}
+
+// ─── Worldstate ───────────────────────────────────────────────────────────────
+let wsRefreshTimer = null;
+
+async function loadWorldstate() {
+  document.getElementById('last-refresh').textContent = 'Refreshing…';
+  try {
+    const r = await fetch('/api/worldstate');
+    worldstateData = await r.json();
+    renderWorldstate(worldstateData);
+    document.getElementById('last-refresh').textContent = 'Updated ' + new Date().toLocaleTimeString();
+  } catch(e) {
+    document.getElementById('last-refresh').textContent = 'Error fetching data';
+  }
+  clearTimeout(wsRefreshTimer);
+  wsRefreshTimer = setTimeout(loadWorldstate, 60000);
+}
+
+function renderWorldstate(ws) {
+  countdownIntervals.forEach(clearInterval);
+  countdownIntervals = [];
+  renderCycles(ws);
+  renderFissures();
+  renderSortie(ws.sortie);
+  renderArbitration(ws.arbitration);
+  renderArchonHunt(ws.archonHunt);
+  renderNightwave(ws.nightwave);
+  renderEvents(ws.events);
+  renderVoidTraders(ws.voidTrader, ws.vaultTrader);
+  renderInvasions(ws.invasions);
+  renderGameAlerts(ws.alerts);
+  renderSteelPath(ws.steelPath);
+  renderDarvo(ws.dailyDeals);
+  renderArchimedea(ws.deepArchimedea);
+  renderConstruction(ws.constructionProgress);
+  renderNews(ws.news);
+}
+
+// Cycles
+function renderCycles(ws) {
+  const grid = document.getElementById('cycles-grid');
+  const cycles = [
+    { key:'cetusCycle',   label:'Cetus',         dayKey:'isDay',   dayLabel:'Day',   nightLabel:'Night' },
+    { key:'vallisCycle',  label:'Orb Vallis',    dayKey:'isWarm',  dayLabel:'Warm',  nightLabel:'Cold' },
+    { key:'cambionCycle', label:'Cambion Drift', dayKey:'active',  dayLabel:'Fass',  nightLabel:'Vome',
+      checkStr:(d)=> d && (d.active||'').toLowerCase() },
+    { key:'earthCycle',   label:'Earth',         dayKey:'isDay',   dayLabel:'Day',   nightLabel:'Night' },
+  ];
+  grid.innerHTML = cycles.map(c => {
+    const d = ws[c.key];
+    if (!d) return `<div class="cycle-card"><div class="cycle-name">${c.label}</div><div class="cycle-state">N/A</div></div>`;
+    let isDay, state, className;
+    if (c.key === 'cambionCycle') {
+      state = (d.active||'vome');
+      isDay = state.toLowerCase() === 'fass';
+      className = state.toLowerCase();
+    } else {
+      isDay = d[c.key === 'vallisCycle' ? 'isWarm' : 'isDay'];
+      state = isDay ? c.dayLabel : c.nightLabel;
+      className = isDay ? (c.key==='vallisCycle'?'warm':'day') : (c.key==='vallisCycle'?'cold':'night');
+    }
+    const expiry = d.expiry;
+    const id = `cycle-${c.key}`;
+    const secs = secsUntil(expiry);
+    const totalSecs = c.key==='cambionCycle'?6000:(c.key==='vallisCycle'?9000:6000);
+    const pct = totalSecs > 0 ? Math.min(100, Math.max(0, ((totalSecs - secs) / totalSecs) * 100)) : 0;
+    const iv = setInterval(()=>{
+      const el = document.getElementById(id);
+      if (!el) { clearInterval(iv); return; }
+      const s = secsUntil(expiry);
+      el.textContent = s > 0 ? fmtTime(s) + ' left' : 'Transitioning…';
+    }, 1000);
+    countdownIntervals.push(iv);
+    return `<div class="cycle-card ${className}">
+      <div class="cycle-name">${c.label}</div>
+      <div class="cycle-state">${state}</div>
+      <div class="cycle-timer" id="${id}">${secs>0?fmtTime(secs)+' left':'Transitioning…'}</div>
+      <div class="cycle-progress"><div class="cycle-progress-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// Fissures
+function renderFissures() {
+  if (!worldstateData || !worldstateData.fissures) return;
+  const all = worldstateData.fissures;
+  const tier = document.getElementById('f-tier').value;
+  const mission = document.getElementById('f-mission').value;
+  const type = document.getElementById('f-type').value;
+  const filtered = all.filter(f => {
+    if (f.expired) return false;
+    if (tier && f.tier !== tier) return false;
+    if (mission && !f.missionType.toLowerCase().includes(mission.toLowerCase())) return false;
+    if (type === 'normal' && (f.isHard || f.isStorm)) return false;
+    if (type === 'hard' && !f.isHard) return false;
+    if (type === 'storm' && !f.isStorm) return false;
+    return true;
+  }).sort((a,b) => (a.tierNum||0) - (b.tierNum||0));
+  const grid = document.getElementById('fissure-grid');
+  document.getElementById('fissure-count').textContent = filtered.length;
+  if (!filtered.length) { grid.innerHTML = '<div class="empty">No fissures match your filters</div>'; return; }
+  grid.innerHTML = filtered.map(f => {
+    const id = `fissure-${f.id}`;
+    const secs = secsUntil(f.expiry);
+    const iv = setInterval(()=>{
+      const el = document.getElementById(id);
+      if (!el) { clearInterval(iv); return; }
+      const s = secsUntil(f.expiry);
+      el.textContent = s>0 ? fmtTime(s) : 'Expired';
+    }, 1000);
+    countdownIntervals.push(iv);
+    const badges = [
+      f.isHard ? '<span class="badge badge-hard">Steel Path</span>' : '',
+      f.isStorm ? '<span class="badge badge-storm">Void Storm</span>' : '',
+    ].join('');
+    return `<div class="fissure-card">
+      <div class="fissure-tier tier-${f.tier}"></div>
+      <div class="fissure-body">
+        <div class="fissure-title">${f.tier} – ${f.missionType}${badges}</div>
+        <div class="fissure-meta">${f.node || f.enemy || ''}</div>
+        <div class="fissure-meta" style="color:var(--text3)" id="${id}">${secs>0?fmtTime(secs):'Expired'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Sortie
+function renderSortie(d) {
+  const el = document.getElementById('sortie-card');
+  const status = document.getElementById('sortie-status');
+  if (!d || !d.id) { el.innerHTML = '<div class="empty">No Sortie data</div>'; status.textContent=''; return; }
+  status.textContent = 'Active';
+  const expId = 'sortie-exp';
+  const iv = setInterval(()=>{ const e=document.getElementById(expId); if(!e){clearInterval(iv);return;} e.textContent=fmtTime(secsUntil(d.expiry));}, 1000);
+  countdownIntervals.push(iv);
+  const factionTag = d.bossFaction ? `<span class="tag tag-blue" style="margin-left:6px">${escHtml(d.bossFaction)}</span>` : '';
+  el.innerHTML = `<div class="card-header"><span class="icon">⚔️</span><h3>Sortie – ${escHtml(d.boss||'')}${factionTag}</h3></div>
+    <div style="font-size:.75rem;color:var(--text3);margin-bottom:12px">Resets in <span id="${expId}">${fmtTime(secsUntil(d.expiry))}</span></div>
+    <div class="mission-list">${(d.variants||[]).map((v,i)=>{
+      const desc = v.modifierDesc || '';
+      return `<div class="mission-item">
+        <div class="mission-num">${i+1}</div>
+        <div class="mission-info">
+          <div class="mission-type">${escHtml(v.missionType||'')}</div>
+          <div class="mission-node">${escHtml(v.node||'')}</div>
+          <div class="mission-modifier"${desc ? ` title="${escHtml(desc)}\" style=\"cursor:help;border-bottom:1px dashed var(--orange)\"` : ''}>${escHtml(v.modifier||'')}${desc ? ' ℹ️' : ''}</div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+}
+
+// Arbitration
+function renderArbitration(d) {
+  const el = document.getElementById('arb-card');
+  if (!d || !d.node) { el.innerHTML = '<div class="empty">No Arbitration data</div>'; return; }
+  const expId = 'arb-exp';
+  const iv = setInterval(()=>{ const e=document.getElementById(expId); if(!e){clearInterval(iv);return;} e.textContent=fmtTime(secsUntil(d.expiry));}, 1000);
+  countdownIntervals.push(iv);
+  el.innerHTML = `<div class="card-header"><span class="icon">🎯</span><h3>Arbitration</h3></div>
+    <div style="font-size:1rem;font-weight:700;margin-bottom:4px">${d.missionType||''}</div>
+    <div style="font-size:.82rem;color:var(--text2);margin-bottom:4px">${d.node||''}</div>
+    <div style="font-size:.78rem;color:var(--text3)">Enemy: ${d.enemy||''}</div>
+    <div style="font-size:.75rem;color:var(--text3);margin-top:10px">Resets in <span id="${expId}">${fmtTime(secsUntil(d.expiry))}</span></div>`;
+}
+
+// Archon Hunt with shard info
+function renderArchonHunt(d) {
+  const el = document.getElementById('archon-card');
+  if (!d || !d.boss) { el.innerHTML = '<div class="empty">No Archon Hunt data</div>'; return; }
+  const expId = 'archon-exp';
+  const iv = setInterval(()=>{ const e=document.getElementById(expId); if(!e){clearInterval(iv);return;} e.textContent=fmtTime(secsUntil(d.expiry));}, 1000);
+  countdownIntervals.push(iv);
+  const shardHint = d.bossCode ? getArchonShardHint(d.bossCode) : '';
+  const shardIcon = shardHint ? getShardIcon(shardHint) : '💎';
+  const shardBadge = d.archonShard
+    ? `<span class="tag tag-purple" style="margin-left:6px">💎 ${escHtml(d.archonShard)}</span>`
+    : (shardHint ? `<span class="tag tag-purple" style="margin-left:6px;cursor:help" title="Archon Shard reward type by boss">${shardIcon} ${escHtml(shardHint)}</span>` : '');
+  el.innerHTML = `<div class="card-header"><span class="icon">🦅</span><h3>Archon Hunt – ${escHtml(d.boss||'')}${shardBadge}</h3></div>
+    <div style="font-size:.75rem;color:var(--text3);margin-bottom:12px">Resets in <span id="${expId}">${fmtTime(secsUntil(d.expiry))}</span></div>
+    <div class="mission-list">${(d.missions||[]).map((m,i)=>`
+      <div class="mission-item">
+        <div class="mission-num">${i+1}</div>
+        <div class="mission-info">
+          <div class="mission-type">${escHtml(m.type||'')}</div>
+          <div class="mission-node">${escHtml(m.node||'')}</div>
+        </div>
+      </div>`).join('')}</div>
+    ${shardHint ? `<div style="font-size:.7rem;color:var(--text3);margin-top:10px;border-top:1px solid var(--border);padding-top:8px">💡 Expected reward: <strong style="color:var(--purple)">${shardHint} Archon Shard</strong></div>` : ''}`;
+}
+
+const archonShardBossMap = {
+  'SORTIE_BOSS_AMAR': 'Azure',
+  'SORTIE_BOSS_ERRA': 'Crimson',
+  'SORTIE_BOSS_NIRA': 'Amber',
+};
+function getArchonShardHint(bossCode) {
+  return archonShardBossMap[bossCode] || '';
+}
+function getShardIcon(color) {
+  const icons = {Azure:'🔷',Crimson:'🔴',Amber:'🟡',Emerald:'🟢',Violet:'🟣',Topaz:'🟠'};
+  return icons[color] || '💎';
+}
+
+// Nightwave
+function renderNightwave(d) {
+  const el = document.getElementById('nightwave-card');
+  if (!d) { el.innerHTML = '<div class="empty">No Nightwave data</div>'; return; }
+  const challenges = d.activeChallenges||[];
+  el.innerHTML = `<div class="card-header"><span class="icon">🌊</span><h3>Nightwave – ${d.tag||''}</h3></div>
+    ${challenges.slice(0,15).map(c=>{
+      const type = c.isDaily?'daily':c.isElite?'elite':'weekly';
+      return `<div class="nw-challenge">
+        <span class="nw-type nw-${type}">${type}</span>
+        <div><div class="nw-title">${c.title||c.desc||''}</div>
+        <div class="nw-rep">+${(c.reputation||0).toLocaleString()} Standing</div></div>
+      </div>`;
+    }).join('')}
+    ${!challenges.length?'<div class=\"empty\">No active challenges</div>':''}`;
+}
+
+// Events
+function renderEvents(arr) {
+  const el = document.getElementById('events-list');
+  if (!arr || !arr.length) { el.innerHTML = '<div class="empty">No active events</div>'; return; }
+  el.innerHTML = arr.map(e=>{
+    const prog = e.health != null ? `<div class="progress-bar"><div class="progress-fill" style="width:${Math.max(0,e.health||0)}%"></div></div>` : '';
+    const expId = 'ev-'+e.id;
+    const iv = setInterval(()=>{ const el2=document.getElementById(expId); if(!el2){clearInterval(iv);return;} el2.textContent=fmtTime(secsUntil(e.expiry));}, 1000);
+    countdownIntervals.push(iv);
+    return `<div class="event-item">
+      <div class="event-name">${e.description||e.node||'Event'}</div>
+      <div class="event-meta">
+        <span>📍 ${e.node||''}</span>
+        ${e.rewards?.length?`<span>Rewards: ${e.rewards.map(r=>r.asString||r.type||'').join(', ')}</span>`:''}
+        <span class="event-timer">⏱ <span id="${expId}">${fmtTime(secsUntil(e.expiry))}</span></span>
+      </div>
+      ${prog}
+    </div>`;
+  }).join('');
+}
+
+// Void Traders
+function renderVoidTraders(baro, varzia) {
+  const grid = document.getElementById('vt-grid');
+  grid.innerHTML = [
+    renderTraderCard(baro, "Baro Ki'Teer", "🛒"),
+    renderTraderCard(varzia, "Varzia (Prime Vault)", "💰"),
+  ].join('');
+}
+
+function renderTraderCard(d, name, icon) {
+  if (!d) return `<div class="card"><div class="card-header"><span class="icon">${icon}</span><h3>${name}</h3></div><div class="empty">No data</div></div>`;
+  const active = d.active;
+  const expId = 'vt-'+name.replace(/\\W/g,'');
+  const expiry = active ? d.expiry : d.activation;
+  const iv = setInterval(()=>{ const e=document.getElementById(expId); if(!e){clearInterval(iv);return;} e.textContent=fmtTime(secsUntil(expiry));}, 1000);
+  countdownIntervals.push(iv);
+  const inv = d.inventory||[];
+  return `<div class="card">
+    <div class="card-header"><span class="icon">${icon}</span><h3>${name}</h3></div>
+    <div class="vt-status ${active?'active':'inactive'}">${active?'✅ Active':'❌ Not Arrived'}</div>
+    <div style="font-size:.78rem;color:var(--text2);margin-bottom:10px">
+      ${active?'Leaves':'Arrives'} in <span id="${expId}">${fmtTime(secsUntil(expiry))}</span>
+      ${d.location?` • <span style="color:var(--text3)">${d.location}</span>`:''}
+    </div>
+    ${active&&inv.length?`<div class="inventory-grid">${inv.slice(0,40).map(i=>`
+      <div class="inv-item">
+        <div class="inv-item-name">${i.item||i.uniqueName||''}</div>
+        <div class="inv-item-cost">${i.credits?i.credits+' cr':''} ${i.ducats?i.ducats+' duc':''}</div>
+      </div>`).join('')}</div>`:''}
+  </div>`;
+}
+
+// Invasions
+function renderInvasions(arr) {
+  const el = document.getElementById('invasions-list');
+  const active = (arr||[]).filter(i=>!i.completed);
+  if (!active.length) { el.innerHTML = '<div class="empty">No active invasions</div>'; return; }
+  el.innerHTML = active.slice(0,20).map(i=>{
+    const pct = Math.round((i.completion||0) * 10) / 10;
+    return `<div class="event-item">
+      <div class="event-name">${i.desc||'Invasion'}</div>
+      <div class="event-meta">
+        <span>📍 ${i.node||''}</span>
+        <span style="color:var(--red)">${i.attackingFaction||''}</span>
+        <span>vs</span>
+        <span style="color:var(--primary)">${i.defendingFaction||''}</span>
+      </div>
+      <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
+        <div class="progress-bar" style="flex:1;margin-top:0"><div class="progress-fill" style="width:${50+pct/2}%"></div></div>
+        <span style="font-size:.73rem;color:var(--text3)">${pct.toFixed(1)}%</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// In-Game Alerts
+function renderGameAlerts(arr) {
+  const el = document.getElementById('game-alerts-list');
+  if (!arr || !arr.length) { el.innerHTML = '<div class="empty">No active in-game alerts</div>'; return; }
+  el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Node</th><th>Mission</th><th>Reward</th><th>Expires</th></tr></thead><tbody>' +
+    arr.map(a=>{
+      const expId='ga-'+a.id;
+      const iv=setInterval(()=>{const e=document.getElementById(expId);if(!e){clearInterval(iv);return;}e.textContent=fmtTime(secsUntil(a.expiry));},1000);
+      countdownIntervals.push(iv);
+      return `<tr>
+        <td>${a.node||''}</td>
+        <td>${a.missionType||''}</td>
+        <td style="color:var(--gold)">${a.reward?.asString||''}</td>
+        <td style="color:var(--orange)" id="${expId}">${fmtTime(secsUntil(a.expiry))}</td>
+      </tr>`;
+    }).join('') + '</tbody></table></div>';
+}
+
+// Steel Path
+function renderSteelPath(d) {
+  const el = document.getElementById('sp-card');
+  if (!d) { el.innerHTML = '<div class="empty">No Steel Path data</div>'; return; }
+  const expId = 'sp-exp';
+  const iv = setInterval(() => {
+    const e = document.getElementById(expId);
+    if (!e) { clearInterval(iv); return; }
+    e.textContent = fmtTime(secsUntil(d.expiry));
+  }, 1000);
+  countdownIntervals.push(iv);
+  let html = `<div class="card-header"><span class="icon">🏆</span><h3>Steel Path Honors</h3></div>
+    <div style="font-size:.75rem;color:var(--text3);margin-bottom:14px">Weekly rotation resets in <span id="${expId}">${fmtTime(secsUntil(d.expiry))}</span></div>`;
+  if (d.currentReward) {
+    const crEffect = d.currentReward.effect || '';
+    html += `<div style="background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;padding:14px;margin-bottom:12px">
+      <div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">⭐ Featured Reward</div>
+      <div style="font-size:.95rem;font-weight:700;color:var(--gold)">${escHtml(d.currentReward.name||'')}</div>
+      <div style="font-size:.78rem;color:var(--text2)">Cost: ${d.currentReward.cost||0} Steel Essence</div>
+      ${crEffect ? `<div style="font-size:.7rem;color:var(--cyan);margin-top:6px;border-top:1px solid var(--border);padding-top:6px">✨ ${escHtml(crEffect)}</div>` : ''}
+    </div>`;
+  }
+  if (d.rotation && d.rotation.length > 0) {
+    html += `<div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">🔄 Weekly Rotation</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:4px;margin-bottom:12px">`;
+    d.rotation.slice(0, 12).forEach(item => {
+      const itemName = item.reward || item.name || '';
+      const itemEffect = item.effect || '';
+      const cursorStyle = itemEffect ? ';cursor:help' : '';
+      html += `<div style="background:var(--bg2);border:1px solid var(--card-border);border-radius:6px;padding:8px;font-size:.73rem${cursorStyle}"${itemEffect ? ` title="${escHtml(itemEffect)}"` : ''}>
+        <div style="color:var(--text)">${escHtml(itemName)}${itemEffect ? ' ℹ️' : ''}</div>
+        <div style="color:var(--gold);font-size:.68rem">${item.cost||0} SE</div>
+        ${itemEffect ? `<div style="font-size:.63rem;color:var(--cyan);margin-top:4px;border-top:1px solid var(--border);padding-top:4px">${escHtml(itemEffect.slice(0,80))}${itemEffect.length > 80 ? '…' : ''}</div>` : ''}
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  if (d.evergreens && d.evergreens.length > 0) {
+    html += `<details style="margin-bottom:12px">
+      <summary style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;cursor:pointer;padding:6px 0;user-select:none">🛒 Evergreen Items (${d.evergreens.length})</summary>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:4px;margin-top:6px;max-height:240px;overflow-y:auto">`;
+    d.evergreens.slice(0, 40).forEach(item => {
+      html += `<div style="background:var(--bg2);border:1px solid var(--card-border);border-radius:6px;padding:8px;font-size:.73rem">
+        <div style="color:var(--text)">${escHtml(item.name||'')}</div>
+        <div style="color:var(--gold);font-size:.68rem">${item.cost||0} SE</div>
+      </div>`;
+    });
+    html += `</div></details>`;
+  }
+  const inc = d.incursions || {};
+  const acolytes = inc.acolytes || [];
+  if (acolytes.length > 0) {
+    html += `<div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">⚔️ Active Acolytes (${acolytes.length})</div>`;
+    acolytes.slice(0, 10).forEach(a => {
+      const aName = a.name || (a.agentType ? a.agentType.split('/').pop().replace('Acolyte','') : 'Unknown');
+      const aExpId = 'acolyte-' + (a.id || Math.random().toString(36).slice(2,8));
+      const iv2 = setInterval(() => {
+        const el2 = document.getElementById(aExpId);
+        if (!el2) { clearInterval(iv2); return; }
+        el2.textContent = fmtTime(secsUntil(a.expiry));
+      }, 1000);
+      countdownIntervals.push(iv2);
+      const healthPct = a.health != null ? Math.round(a.health * 100) : null;
+      html += `<div style="background:var(--bg2);border:1px solid var(--card-border);border-radius:6px;padding:10px 12px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <span style="color:var(--red);font-weight:700">${escHtml(aName)}</span>
+          <span style="color:var(--text2);font-size:.73rem;margin-left:6px">@ ${escHtml(a.node||'?')}</span>
+          ${healthPct !== null ? `<span style="color:var(--text3);font-size:.68rem;margin-left:6px">${healthPct}% HP</span>` : ''}
+        </div>
+        <span style="color:var(--text3);font-size:.7rem" id="${aExpId}">${fmtTime(secsUntil(a.expiry))}</span>
+      </div>`;
+    });
+  } else if (d.incursions) {
+    html += `<div style="font-size:.75rem;color:var(--text2);padding:8px 0">⏱ Incursion cycle active — no Acolytes currently spawned</div>`;
+  }
+  html += `<div style="font-size:.62rem;color:var(--text3);margin-top:10px;border-top:1px solid var(--border);padding-top:8px">Shop data via WarframeStat.us</div>`;
+  el.innerHTML = html;
+}
+
+// Darvo
+function renderDarvo(arr) {
+  const el = document.getElementById('darvo-card');
+  if (!arr || !arr.length) { el.innerHTML = '<div class="empty">No Darvo deals</div>'; return; }
+  const d = arr[0];
+  const expId='darvo-exp';
+  const iv=setInterval(()=>{const e=document.getElementById(expId);if(!e){clearInterval(iv);return;}e.textContent=fmtTime(secsUntil(d.expiry));},1000);
+  countdownIntervals.push(iv);
+  el.innerHTML = `<div class="card-header"><span class="icon">🛍️</span><h3>Darvo Daily Deal</h3></div>
+    <div style="font-size:1rem;font-weight:700;color:var(--gold)">${d.item||''}</div>
+    <div style="font-size:.82rem;color:var(--text2);margin-top:6px">
+      <span style="text-decoration:line-through;color:var(--text3)">${d.originalPrice||0} p</span>
+      → <span style="color:var(--green)">${d.salePrice||0} p</span>
+      <span class="tag tag-orange" style="margin-left:6px">-${d.discount||0}%</span>
+    </div>
+    <div style="font-size:.78rem;color:var(--text2);margin-top:6px">${d.total-d.amountSold||0} / ${d.total||0} remaining</div>
+    <div style="font-size:.75rem;color:var(--text3);margin-top:10px">Expires in <span id="${expId}">${fmtTime(secsUntil(d.expiry))}</span></div>`;
+}
+
+// Deep Archimedea
+function renderArchimedea(d) {
+  const el = document.getElementById('archimedea-card');
+  if (!d || !d.missions) { el.innerHTML = '<div class="empty">No Deep Archimedea data available</div>'; return; }
+  el.innerHTML = `<div class="card-header"><span class="icon">🔱</span><h3>Deep Archimedea</h3></div>
+    <div class="mission-list">${(d.missions||[]).map((m,i)=>`
+      <div class="mission-item">
+        <div class="mission-num">${i+1}</div>
+        <div class="mission-info">
+          <div class="mission-type">${m.type||m.missionType||''}</div>
+          <div class="mission-node">${m.node||m.location||''}</div>
+          ${m.personalModifiers?.length?`<div class="mission-modifier">Modifiers: ${m.personalModifiers.join(', ')}</div>`:''}
+        </div>
+      </div>`).join('')}</div>`;
+}
+
+// Construction Progress
+function renderConstruction(d) {
+  const grid = document.getElementById('construction-grid');
+  if (!d) { grid.innerHTML = '<div class="empty">No construction data</div>'; return; }
+  grid.innerHTML = [
+    {label:'Fomorian',key:'fomorianProgress'},
+    {label:'Razorback',key:'razorbackProgress'},
+  ].map(({label,key})=>`
+    <div class="card">
+      <div class="card-header"><span class="icon">🏗️</span><h3>${label}</h3></div>
+      <div style="font-size:1.4rem;font-weight:700;color:var(--orange)">${(d[key]||'0%')}</div>
+      <div class="progress-bar" style="margin-top:8px">
+        <div class="progress-fill" style="width:${parseFloat(d[key]||0)}%"></div>
+      </div>
+    </div>`).join('');
+}
+
+// News
+function renderNews(arr) {
+  const el = document.getElementById('news-list');
+  if (!arr || !arr.length) { el.innerHTML = '<div class="empty">No news</div>'; return; }
+  el.innerHTML = `<div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>Date</th><th>Message</th><th></th></tr></thead>
+    <tbody>${arr.slice(0,10).map(n=>`<tr>
+      <td style="color:var(--text3);white-space:nowrap">${n.date?new Date(n.date).toLocaleDateString():''}</td>
+      <td>${n.message||n.translations?.en||''}</td>
+      <td>${n.link?`<a href="${n.link}" target="_blank" style="color:var(--primary);font-size:.75rem">View ↗</a>`:''}</td>
+    </tr>`).join('')}</tbody>
+  </table></div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ─── ARCANE SEARCH ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+
+async function loadArcaneData() {
+  try {
+    const r = await fetch('/api/arcanes');
+    arcaneData = await r.json();
+    initArcaneSearch();
+  } catch(e) {
+    document.getElementById('arcane-grid').innerHTML = '<div class="error-msg">Failed to load arcane data</div>';
+  }
+}
+
+function initArcaneSearch() {
+  // Populate location filter
+  const locations = new Set();
+  arcaneData.forEach(a => {
+    if (a.Location) {
+      a.Location.split(',').forEach(l => {
+        const t = l.trim();
+        if (t) locations.add(t);
+      });
+    }
+  });
+  const locSelect = document.getElementById('arcane-location');
+  const sortedLocs = Array.from(locations).sort();
+  sortedLocs.forEach(l => {
+    const opt = document.createElement('option');
+    opt.value = l;
+    opt.textContent = l;
+    locSelect.appendChild(opt);
+  });
+  document.getElementById('arcane-total').textContent = arcaneData.length;
+  document.getElementById('arcane-locations').textContent = sortedLocs.length;
+  filterArcanes();
+}
+
+function filterArcanes() {
+  const query = document.getElementById('arcane-search').value.toLowerCase().trim();
+  const rarity = document.getElementById('arcane-rarity').value;
+  const location = document.getElementById('arcane-location').value;
+  const qWords = query ? query.split(/\s+/) : [];
+
+  const matched = arcaneData.filter(a => {
+    // Search by name, effect, location
+    if (qWords.length > 0) {
+      const haystack = ((a.Name||'') + ' ' + (a.Effect||'') + ' ' + (a.Location||'')).toLowerCase();
+      if (!qWords.every(w => haystack.includes(w))) return false;
+    }
+    if (rarity && a.Rarity !== rarity) return false;
+    if (location) {
+      const locs = (a.Location||'').toLowerCase();
+      if (!locs.includes(location.toLowerCase())) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('arcane-matched').textContent = matched.length;
+  renderArcanes(matched);
+}
+
+function renderArcanes(items) {
+  const grid = document.getElementById('arcane-grid');
+  if (!items.length) {
+    grid.innerHTML = '<div class="empty">No arcanes match your search</div>';
+    return;
+  }
+  grid.innerHTML = items.slice(0, 200).map(a => {
+    const effect = a.Effect ? a.Effect.slice(0, 120) + (a.Effect.length > 120 ? '…' : '') : '';
+    return `<div class="arcane-item">
+      <div class="name">${escHtml(a.Name)}</div>
+      <div class="rarity ${a.Rarity||''}">${a.Rarity||''}</div>
+      ${effect ? `<div class="effect">${escHtml(effect)}</div>` : ''}
+      <div class="location">${a.Location||''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ─── Alerts Tab ───────────────────────────────────────────────────────────────
+async function loadAlerts() {
+  const r = await fetch('/api/alerts');
+  const rules = await r.json();
+  const el = document.getElementById('alert-rules-list');
+  if (!rules.length) {
+    el.innerHTML = '<div class="empty">No alert rules yet. Click "New Rule" to create one.</div>';
+  } else {
+    el.innerHTML = rules.map(rule => `
+      <div class="alert-rule-card" style="margin-bottom:8px">
+        <div class="alert-enabled-dot ${rule.enabled?'on':'off'}"></div>
+        <div class="alert-rule-info">
+          <div class="alert-rule-name">${escHtml(rule.name)}</div>
+          <div class="alert-rule-type">${fmtEventType(rule.eventType)} • Cooldown: ${rule.cooldownMinutes}m
+            ${rule.lastFired?'• Last fired: '+new Date(rule.lastFired).toLocaleString():''}</div>
+        </div>
+        <div class="alert-rule-actions">
+          <button class="btn-icon" onclick="testAlert(${rule.id})" title="Test notification">🧪</button>
+          <button class="btn-icon" onclick="editAlert(${rule.id})" title="Edit">✏️</button>
+          <button class="btn-icon danger" onclick="deleteAlert(${rule.id})" title="Delete">🗑</button>
+        </div>
+      </div>`).join('');
+  }
+  const lr = await fetch('/api/alerts/log');
+  const logs = await lr.json();
+  const logEl = document.getElementById('alert-log-list');
+  if (!logs.length) {
+    logEl.innerHTML = '<div class="empty">No notifications fired yet</div>';
+  } else {
+    logEl.innerHTML = logs.map(l=>`
+      <div class="log-entry">
+        <span class="log-time">${new Date(l.firedAt).toLocaleString()}</span>
+        <span class="log-msg">${escHtml(l.message)}</span>
+      </div>`).join('');
+  }
+}
+
+function fmtEventType(t) {
+  const m = {fissure:'🌀 Fissure',sortie:'⚔️ Sortie',arbitration:'🎯 Arbitration',archonHunt:'🦅 Archon Hunt',
+    voidTrader:'🛒 Void Trader',nightwave:'🌊 Nightwave',event:'📣 Event',invasion:'⚡ Invasion',
+    alert:'🔔 In-Game Alert',steelPath:'🏆 Steel Path',dailyReset:'🌅 Daily Reset',weeklyReset:'📅 Weekly Reset'};
+  return m[t]||t;
+}
+
+async function openAlertModal(rule) {
+  editingAlertId = rule ? rule.id : null;
+  document.getElementById('modal-title').textContent = rule ? 'Edit Alert Rule' : 'New Alert Rule';
+  document.getElementById('m-name').value = rule?.name || '';
+  document.getElementById('m-type').value = rule?.eventType || 'fissure';
+  document.getElementById('m-cooldown').value = rule?.cooldownMinutes || 5;
+  document.getElementById('m-urls').value = rule?.appriseUrls || '';
+  document.getElementById('m-enabled').checked = rule ? rule.enabled : true;
+  let cond = {};
+  if (rule?.conditions) try { cond = JSON.parse(rule.conditions); } catch(e){}
+  document.getElementById('c-tier').value = cond.tier||'';
+  document.getElementById('c-mission').value = cond.missionType||'';
+  document.getElementById('c-enemy').value = cond.enemy||'';
+  document.getElementById('c-hard').value = cond.isHard||'';
+  document.getElementById('c-storm').value = cond.isStorm||'';
+  document.getElementById('c-arb-mission').value = cond.missionType||'';
+  document.getElementById('c-arb-enemy').value = cond.enemy||'';
+  document.getElementById('c-vt-item').value = cond.itemKeyword||'';
+  document.getElementById('c-keyword').value = cond.keyword||'';
+  document.getElementById('c-alert-mission').value = cond.missionType||'';
+  document.getElementById('c-alert-kw').value = cond.keyword||'';
+  document.getElementById('c-sp-keyword').value = cond.keyword||'';
+  document.getElementById('c-sp-rotation').checked = cond.rotationAlert === 'true';
+  updateCondFields();
+  document.getElementById('alert-modal').style.display = 'flex';
+}
+
+function closeAlertModal() {
+  document.getElementById('alert-modal').style.display = 'none';
+  editingAlertId = null;
+}
+
+function updateCondFields() {
+  const type = document.getElementById('m-type').value;
+  document.getElementById('cond-fissure').style.display = type==='fissure'?'':'none';
+  document.getElementById('cond-arbitration').style.display = type==='arbitration'?'':'none';
+  document.getElementById('cond-voidTrader').style.display = type==='voidTrader'?'':'none';
+  document.getElementById('cond-keyword').style.display = (type==='event'||type==='invasion')?'':'none';
+  document.getElementById('cond-alert-game').style.display = type==='alert'?'':'none';
+  document.getElementById('cond-steelpath').style.display = type==='steelPath'?'':'none';
+}
+
+async function saveAlert() {
+  const type = document.getElementById('m-type').value;
+  let conditions = {};
+  if (type === 'fissure') {
+    const tier = document.getElementById('c-tier').value;
+    const mt = document.getElementById('c-mission').value;
+    const enemy = document.getElementById('c-enemy').value.trim();
+    const isHard = document.getElementById('c-hard').value;
+    const isStorm = document.getElementById('c-storm').value;
+    if(tier) conditions.tier = tier;
+    if(mt) conditions.missionType = mt;
+    if(enemy) conditions.enemy = enemy;
+    if(isHard) conditions.isHard = isHard;
+    if(isStorm) conditions.isStorm = isStorm;
+  } else if (type === 'arbitration') {
+    const mt = document.getElementById('c-arb-mission').value;
+    const enemy = document.getElementById('c-arb-enemy').value.trim();
+    if(mt) conditions.missionType = mt;
+    if(enemy) conditions.enemy = enemy;
+  } else if (type === 'voidTrader') {
+    const ik = document.getElementById('c-vt-item').value.trim();
+    if(ik) conditions.itemKeyword = ik;
+  } else if (type === 'event' || type === 'invasion') {
+    const kw = document.getElementById('c-keyword').value.trim();
+    if(kw) conditions.keyword = kw;
+  } else if (type === 'alert') {
+    const mt = document.getElementById('c-alert-mission').value;
+    const kw = document.getElementById('c-alert-kw').value.trim();
+    if(mt) conditions.missionType = mt;
+    if(kw) conditions.keyword = kw;
+  } else if (type === 'steelPath') {
+    const kw = document.getElementById('c-sp-keyword').value.trim();
+    if(kw) conditions.keyword = kw;
+    conditions.rotationAlert = document.getElementById('c-sp-rotation').checked ? 'true' : 'false';
+  }
+  const payload = {
+    name: document.getElementById('m-name').value.trim(),
+    eventType: type,
+    conditions: JSON.stringify(conditions),
+    appriseUrls: document.getElementById('m-urls').value.trim(),
+    enabled: document.getElementById('m-enabled').checked,
+    cooldownMinutes: parseInt(document.getElementById('m-cooldown').value)||5,
+  };
+  if (!payload.name) { alert('Please enter a name for the rule'); return; }
+  const url = editingAlertId ? `/api/alerts/${editingAlertId}` : '/api/alerts';
+  const method = editingAlertId ? 'PUT' : 'POST';
+  const r = await fetch(url, {method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+  if (!r.ok) { const d=await r.json(); alert('Error: '+d.error); return; }
+  closeAlertModal();
+  loadAlerts();
+}
+
+async function editAlert(id) {
+  const r = await fetch('/api/alerts');
+  const rules = await r.json();
+  const rule = rules.find(r=>r.id===id);
+  if (rule) openAlertModal(rule);
+}
+
+async function deleteAlert(id) {
+  if (!confirm('Delete this alert rule?')) return;
+  await fetch(`/api/alerts/${id}`, {method:'DELETE'});
+  loadAlerts();
+}
+
+async function testAlert(id) {
+  const btn = event.target;
+  btn.textContent = '⏳';
+  const r = await fetch(`/api/alerts/${id}/test`, {method:'POST'});
+  const d = await r.json();
+  btn.textContent = r.ok ? '✅' : '❌';
+  setTimeout(()=>btn.textContent='🧪', 2000);
+  if (!r.ok) alert('Test failed: '+d.error);
+}
+
+// ─── Settings Tab ─────────────────────────────────────────────────────────────
+async function loadSettings() {
+  const r = await fetch('/api/settings');
+  const u = await r.json();
+  document.getElementById('set-apprise-url').value = u.appriseApiUrl || '';
+  document.getElementById('set-default-urls').value = u.defaultUrls || '';
+  if (u.role === 'admin') {
+    document.getElementById('admin-section').style.display = '';
+    loadAdminUsers();
+  }
+}
+
+async function saveSettings() {
+  const r = await fetch('/api/settings', {
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      appriseApiUrl: document.getElementById('set-apprise-url').value.trim(),
+      defaultUrls: document.getElementById('set-default-urls').value.trim(),
+    })
+  });
+  const msg = document.getElementById('settings-msg');
+  if (r.ok) { msg.className='success-msg'; msg.textContent='✅ Settings saved!'; }
+  else { const d=await r.json(); msg.className='error-msg'; msg.textContent=d.error; }
+  setTimeout(()=>msg.textContent='',3000);
+}
+
+async function changePassword() {
+  const cur = document.getElementById('pw-current').value;
+  const nw = document.getElementById('pw-new').value;
+  const cfm = document.getElementById('pw-confirm').value;
+  const msg = document.getElementById('pw-msg');
+  if (nw !== cfm) { msg.className='error-msg'; msg.textContent='Passwords do not match'; return; }
+  const r = await fetch('/api/settings/password', {
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({currentPassword:cur, newPassword:nw})
+  });
+  const d = await r.json();
+  if (r.ok) { msg.className='success-msg'; msg.textContent='✅ Password updated!'; document.getElementById('pw-current').value=''; document.getElementById('pw-new').value=''; document.getElementById('pw-confirm').value=''; }
+  else { msg.className='error-msg'; msg.textContent=d.error; }
+  setTimeout(()=>msg.textContent='',3000);
+}
+
+async function loadAdminUsers() {
+  const r = await fetch('/api/admin/users');
+  if (!r.ok) return;
+  const users = await r.json();
+  const el = document.getElementById('admin-users-table');
+  el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead><tbody>' +
+    users.map(u=>`<tr>
+      <td style="color:var(--text3);width:40px">${u.id}</td>
+      <td>${escHtml(u.username)}</td>
+      <td style="color:var(--text2);font-size:.78rem">${escHtml(u.email)}</td>
+      <td><span class="role-badge role-${u.role}">${u.role}</span></td>
+      <td style="color:var(--text3);font-size:.75rem">${new Date(u.createdAt).toLocaleDateString()}</td>
+      <td>
+        ${u.id!==currentUser.id?`<button class="btn-icon" onclick="toggleUserRole(${u.id},'${u.role}')" title="Toggle role">👑</button>
+        <button class="btn-icon danger" onclick="adminDeleteUser(${u.id})" title="Delete">🗑</button>`:'<span style="color:var(--text3);font-size:.72rem">You</span>'}
+      </td>
+    </tr>`).join('') + '</tbody></table></div>';
+}
+
+async function toggleUserRole(id, currentRole) {
+  const newRole = currentRole==='admin'?'user':'admin';
+  if (!confirm(`Change user role to '${newRole}'?`)) return;
+  await fetch(`/api/admin/users/${id}/role`, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({role:newRole})});
+  loadAdminUsers();
+}
+
+async function adminDeleteUser(id) {
+  if (!confirm('Delete this user and all their alert rules?')) return;
+  await fetch(`/api/admin/users/${id}`, {method:'DELETE'});
+  loadAdminUsers();
+}
+
+// ─── Utilities ────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');
+}
+
+document.getElementById('alert-modal').addEventListener('click', function(e){
+  if(e.target===this) closeAlertModal();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') closeAlertModal();
+});
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
