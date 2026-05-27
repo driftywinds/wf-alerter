@@ -7,6 +7,10 @@
 *.dll
 *.so
 *.dylib
+*.db
+*.db-shm
+*.db-wal
+de*
 
 # Test binary, built with `go test -c`
 *.test
