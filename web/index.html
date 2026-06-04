@@ -367,22 +367,53 @@ textarea{resize:vertical;min-height:70px}
 .arcane-filters select:focus{border-color:var(--primary)}
 .arcane-stats{font-size:.73rem;color:var(--text3);margin-bottom:10px;display:flex;gap:16px;flex-wrap:wrap}
 .arcane-stats span{display:flex;align-items:center;gap:4px}
-.arcane-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;
-  max-height:500px;overflow-y:auto;padding:2px}
-.arcane-item{background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;
-  padding:12px;transition:var(--transition);cursor:default}
-.arcane-item:hover{border-color:var(--primary);background:var(--card-hover);transform:translateY(-1px)}
-.arcane-item .name{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:2px}
-.arcane-item .rarity{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
-.arcane-item .rarity.Common{color:#94a3b8}
+.arcane-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;padding:2px}
+.arcane-item{background:var(--bg2);border:1px solid var(--card-border);border-left:3px solid var(--border);
+  border-radius:8px;padding:12px;transition:var(--transition);cursor:default;
+  display:flex;align-items:flex-start;gap:10px}
+.arcane-item:hover{background:var(--card-hover);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.arcane-item.rarity-Common{border-left-color:#64748b}
+.arcane-item.rarity-Uncommon{border-left-color:var(--green)}
+.arcane-item.rarity-Rare{border-left-color:var(--primary)}
+.arcane-item.rarity-Legendary{border-left-color:var(--gold)}
+.arcane-item.rarity-Common:hover{border-color:#64748b}
+.arcane-item.rarity-Uncommon:hover{border-color:var(--green)}
+.arcane-item.rarity-Rare:hover{border-color:var(--primary)}
+.arcane-item.rarity-Legendary:hover{border-color:var(--gold);box-shadow:0 4px 20px var(--gold-glow)}
+.arcane-thumb{width:38px;height:38px;object-fit:contain;flex-shrink:0;border-radius:6px;
+  margin-top:1px;opacity:.9;background:var(--bg3);padding:2px}
+.arcane-item-body{flex:1;min-width:0}
+.arcane-item .name{font-size:.83rem;font-weight:700;color:var(--text);margin-bottom:3px}
+.arcane-item .rarity{font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+.arcane-item .rarity.Common{color:#64748b}
 .arcane-item .rarity.Uncommon{color:var(--green)}
 .arcane-item .rarity.Rare{color:var(--primary)}
 .arcane-item .rarity.Legendary{color:var(--gold)}
-.arcane-item .effect{font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.4}
-.arcane-item .location{font-size:.68rem;color:var(--text3);margin-top:4px}
+.arcane-item .effect{font-size:.71rem;color:var(--text2);margin-top:5px;line-height:1.45;
+  white-space:pre-line}
+.arcane-item .location{font-size:.67rem;color:var(--text3);margin-top:5px;
+  border-top:1px solid var(--border);padding-top:4px}
 .arcane-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);
   padding:18px;margin-bottom:20px}
 .arcane-card .card-header{margin-bottom:10px}
+
+/* ── Deep Archimedea ─────────────────────────────────────────────────────── */
+.da-mission-card{background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;
+  padding:14px 16px;margin-bottom:6px;display:flex;gap:14px;align-items:flex-start;
+  transition:var(--transition)}
+.da-mission-card:hover{background:var(--card-hover)}
+.da-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--bg3),var(--bg4));
+  color:var(--text2);font-size:.75rem;font-weight:700;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;margin-top:1px}
+.da-info{flex:1;min-width:0}
+.da-type{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:3px}
+.da-node{font-size:.72rem;color:var(--text3);margin-bottom:6px}
+.da-modifiers{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.da-mod-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;
+  border-radius:4px;font-size:.67rem;font-weight:700;
+  background:rgba(249,115,22,.1);color:var(--orange);border:1px solid rgba(249,115,22,.25)}
+.da-mod-badge.negative{background:rgba(239,68,68,.1);color:var(--red);border-color:rgba(239,68,68,.25)}
+.da-mod-badge.neutral{background:rgba(100,116,139,.1);color:var(--text2);border-color:var(--border)}
 
 /* ── Archon Shard Display ────────────────────────────────────────────────── */
 .shard-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
@@ -429,7 +460,7 @@ textarea{resize:vertical;min-height:70px}
   .section-title{margin:18px 0 10px}
   .form-row{grid-template-columns:1fr}
   .auth-box{padding:28px 24px;margin:0 12px}
-  .arcane-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));max-height:400px}
+  .arcane-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
   .shard-grid{grid-template-columns:repeat(2,1fr)}
   .inventory-grid{grid-template-columns:repeat(2,1fr);max-height:200px}
   .arcane-stats{flex-direction:column;gap:4px}
@@ -442,7 +473,7 @@ textarea{resize:vertical;min-height:70px}
   .grid-4{grid-template-columns:1fr}
   .shard-grid{grid-template-columns:1fr}
   nav button{padding:10px 10px;font-size:.75rem}
-  .arcane-grid{grid-template-columns:1fr;max-height:300px}
+  .arcane-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -1430,19 +1461,58 @@ function renderDarvo(arr) {
 }
 
 // Deep Archimedea
+const DA_TYPE_MAP = {
+  'DT_EXTERMINATE':'Exterminate','DT_DEFENSE':'Defense','DT_SURVIVAL':'Survival',
+  'DT_INTERCEPTION':'Interception','DT_EXCAVATION':'Excavation','DT_DISRUPTION':'Disruption',
+  'DT_MOBILE_DEFENSE':'Mobile Defense','DT_SPY':'Spy','DT_CAPTURE':'Capture',
+  'DT_SABOTAGE_DEFENSE':'Sabotage / Defense','DT_LOOT_CREATURES':'Loot Creatures',
+  'DT_PRESURE_GAUGE':'Pressure Point','DT_UNIQUE':'Special Challenge',
+  'DT_PROTOFRAME':'Protoframe','DT_NETRACELLS':'Netracells',
+};
+const DA_MOD_MAP = {
+  'DarknessAura':'Darkness','CoHVoidAberrationAura':'Void Aberration',
+  'HardShellEnhancementAura':'Hard Shell','CoHHorseAura':'Kaithe Only',
+  'DisableSelfReviveAura':'No Self-Revive','CoHUnseenFoesAura':'Unseen Foes',
+  'CoHNarmerPhobiaAura':'Narmer Phobia','ToxicLeechEnhancementAura':'Toxic Leech',
+  'SecuritySpinAura':'Security Rotation','CoHElectricAura':'Electric Hazard',
+  'CoHFireAura':'Fire Hazard','CoHColdAura':'Cold Hazard',
+  'CoHPoisonAura':'Poison Hazard','CoHBlastAura':'Blast Hazard',
+  'LimitedRevivesAura':'Limited Revives','NoShieldsAura':'No Shields',
+  'WeaponRestrictionPrimaryAura':'Primary Only','WeaponRestrictionSecondaryAura':'Secondary Only',
+  'WeaponRestrictionMeleeAura':'Melee Only','CoHArmorAura':'Armored Enemies',
+};
+const DA_NEG_MODS = new Set(['DisableSelfReviveAura','LimitedRevivesAura','NoShieldsAura',
+  'CoHUnseenFoesAura','WeaponRestrictionPrimaryAura','WeaponRestrictionSecondaryAura',
+  'WeaponRestrictionMeleeAura']);
+function cleanDANode(path) {
+  if (!path || !path.includes('/')) return path||'';
+  const part = path.split('/').pop().replace('.level','');
+  // Protoframe rooms include warframe name
+  if (part.startsWith('ProtoframeRoom')) return 'Protoframe – ' + part.replace('ProtoframeRoom','');
+  // Strip "Arena" prefix, split PascalCase
+  return part.replace(/^Arena/,'').replace(/([A-Z])/g,' $1').trim()||part;
+}
 function renderArchimedea(d) {
   const el = document.getElementById('archimedea-card');
   if (!d || !d.missions) { el.innerHTML = '<div class="empty">No Deep Archimedea data available</div>'; return; }
   el.innerHTML = `<div class="card-header"><span class="icon">🔱</span><h3>Deep Archimedea</h3></div>
-    <div class="mission-list">${(d.missions||[]).map((m,i)=>`
-      <div class="mission-item">
-        <div class="mission-num">${i+1}</div>
-        <div class="mission-info">
-          <div class="mission-type">${m.type||m.missionType||''}</div>
-          <div class="mission-node">${m.node||m.location||''}</div>
-          ${m.personalModifiers?.length?`<div class="mission-modifier">Modifiers: ${m.personalModifiers.join(', ')}</div>`:''}
+    ${(d.missions||[]).map((m,i)=>{
+      const typeName = DA_TYPE_MAP[m.type] || (m.type||'').replace(/^DT_/,'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+      const nodeName = cleanDANode(m.node||m.location||'');
+      const mods = (m.personalModifiers||[]).map(mod=>{
+        const label = DA_MOD_MAP[mod] || mod.replace(/Aura$/,'').replace(/CoH/,'').replace(/([A-Z])/g,' $1').trim();
+        const cls = DA_NEG_MODS.has(mod)?'negative':'';
+        return `<span class="da-mod-badge ${cls}">⚠ ${escHtml(label)}</span>`;
+      }).join('');
+      return `<div class="da-mission-card">
+        <div class="da-num">${i+1}</div>
+        <div class="da-info">
+          <div class="da-type">${escHtml(typeName)}</div>
+          ${nodeName?`<div class="da-node">📍 ${escHtml(nodeName)}</div>`:''}
+          ${mods?`<div class="da-modifiers">${mods}</div>`:''}
         </div>
-      </div>`).join('')}</div>`;
+      </div>`;
+    }).join('')}`;
 }
 
 // Construction Progress
@@ -1494,8 +1564,8 @@ function initArcaneSearch() {
   // Populate location filter
   const locations = new Set();
   arcaneData.forEach(a => {
-    if (a.Location) {
-      a.Location.split(',').forEach(l => {
+    if (a.location) {
+      a.location.split(',').forEach(l => {
         const t = l.trim();
         if (t) locations.add(t);
       });
@@ -1521,14 +1591,13 @@ function filterArcanes() {
   const qWords = query ? query.split(/\s+/) : [];
 
   const matched = arcaneData.filter(a => {
-    // Search by name, effect, location
     if (qWords.length > 0) {
-      const haystack = ((a.Name||'') + ' ' + (a.Effect||'') + ' ' + (a.Location||'')).toLowerCase();
+      const haystack = ((a.name||'') + ' ' + (a.effect||'') + ' ' + (a.location||'')).toLowerCase();
       if (!qWords.every(w => haystack.includes(w))) return false;
     }
-    if (rarity && a.Rarity !== rarity) return false;
+    if (rarity && a.rarity !== rarity) return false;
     if (location) {
-      const locs = (a.Location||'').toLowerCase();
+      const locs = (a.location||'').toLowerCase();
       if (!locs.includes(location.toLowerCase())) return false;
     }
     return true;
@@ -1545,12 +1614,17 @@ function renderArcanes(items) {
     return;
   }
   grid.innerHTML = items.slice(0, 200).map(a => {
-    const effect = a.Effect ? a.Effect.slice(0, 120) + (a.Effect.length > 120 ? '…' : '') : '';
-    return `<div class="arcane-item">
-      <div class="name">${escHtml(a.Name)}</div>
-      <div class="rarity ${a.Rarity||''}">${a.Rarity||''}</div>
-      ${effect ? `<div class="effect">${escHtml(effect)}</div>` : ''}
-      <div class="location">${a.Location||''}</div>
+    const rar = a.rarity || '';
+    const effect = a.effect ? a.effect.slice(0, 160) + (a.effect.length > 160 ? '…' : '') : '';
+    const thumb = a.thumbnail ? `<img class="arcane-thumb" src="${escHtml(a.thumbnail)}" alt="" loading="lazy" onerror="this.style.display='none'"/>` : '';
+    return `<div class="arcane-item rarity-${rar}">
+      ${thumb}
+      <div class="arcane-item-body">
+        <div class="name">${escHtml(a.name||'')}</div>
+        <div class="rarity ${rar}">${rar}</div>
+        ${effect ? `<div class="effect">${escHtml(effect)}</div>` : ''}
+        ${a.location ? `<div class="location">📍 ${escHtml(a.location)}</div>` : ''}
+      </div>
     </div>`;
   }).join('');
 }
